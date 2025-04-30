@@ -1,0 +1,22 @@
+services:
+  frontend:
+    build:
+      context: ./basic-frontend-app
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+  
+  backend:
+    build:
+      context: ./basic-twitch-api
+      dockerfile: Dockerfile
+    environment:
+      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
+      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
+      - TWITCH_STREAMER_USERNAME=${TWITCH_STREAMER_USERNAME}
+      - PORT=${TWITCH_API_PORT}
+      - URL=${HOST_URL}
+    ports:
+      - "3000:3000"
