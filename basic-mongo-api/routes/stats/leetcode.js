@@ -3,6 +3,9 @@ const router = express.Router();
 
 const { fetchCollection, fetchRecord, addRecord, updateRecord } = require('../../utils/mongo');
 const { validateRecord, validateUpdate } = require('../../utils/schema');
+const validateToken = require('../../middleware/validateToken');
+const ROLES_LIST = require('../../config/roles_list');
+const verifyRoles = require('../../middleware/verifyRoles');
 
 router.get('/leetcode', async (req, res) => {
     try {
@@ -37,7 +40,7 @@ router.get('/leetcode/problem', async (req, res) => {
     }
 });
 
-router.post('/leetcode/addProblem', async (req, res) => {
+router.post('/leetcode/addProblem', validateToken, verifyRoles(ROLES_LIST.Bot), async (req, res) => {
     try {
         const validatedParams =  validateRecord('problem', req.body);
         const result = await addRecord('stats', 'leetcode', validatedParams);
@@ -57,7 +60,7 @@ router.post('/leetcode/addProblem', async (req, res) => {
     }
 });
 
-router.post('/leetcode/updateProblem', async (req, res) => {
+router.post('/leetcode/updateProblem', validateToken, verifyRoles(ROLES_LIST.Bot), async (req, res) => {
     try {
         const id = req.query.id;
 
