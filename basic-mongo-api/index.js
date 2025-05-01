@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express().disable('X-Powered-By');
+app.use(express.json());
 
 // READING IN ENV VARIABLES
 require('dotenv').config();
@@ -9,6 +10,9 @@ const url = process.env.ENVIRONMENT === 'DEV' ? 'http://localhost' : process.env
 // LOADING IN CUSTOM ROUTES
 const twitchRouter = require('./routes/twitch');
 app.use('/twitch', twitchRouter);
+
+const statsLeetcodeRouter = require('./routes/stats/leetcode');
+app.use('/stats', statsLeetcodeRouter);
 
 // READING IN AND USING index.html
 const path = require('path');

@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express().disable('X-Powered-By');
+app.use(express.json());
 
 // READING IN ENV VARIABLES
 require('dotenv').config();
