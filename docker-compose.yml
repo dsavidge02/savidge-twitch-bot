@@ -11,7 +11,7 @@ services:
     depends_on:
       - backend
   
-  backend:
+  twitchAPI:
     build:
       context: ./basic-twitch-api
       dockerfile: Dockerfile
@@ -23,3 +23,13 @@ services:
       - URL=${HOST_URL}
     ports:
       - "3000:3000"
+
+  mongoAPI:
+    build:
+      context: ./basic-mongo-api
+      dockerfile: Dockerfile
+    environment:
+      - PORT=${MONGO_API_PORT}
+      - URL=${HOST_URL}
+    ports:
+      - "3001:3001"

@@ -4,19 +4,15 @@ app.use(express.json());
 
 // READING IN ENV VARIABLES
 require('dotenv').config();
-const port = process.env.ENVIRONMENT === 'DEV' ? 3000 : process.env.PORT;
+const port = process.env.ENVIRONMENT === 'DEV' ? 3001 : process.env.PORT;
 const url = process.env.ENVIRONMENT === 'DEV' ? 'http://localhost' : process.env.URL;
 
-// STARTING TOKEN REFRESH LOOP
-const { fetchAccessToken } = require('./utils/twitchAuthService');
-fetchAccessToken();
-
 // LOADING IN CUSTOM ROUTES
-const userRouter = require('./routes/user');
-app.use('/user', userRouter);
+const twitchRouter = require('./routes/twitch');
+app.use('/twitch', twitchRouter);
 
-const channelRouter = require('./routes/channel');
-app.use('/channel', channelRouter);
+const statsLeetcodeRouter = require('./routes/stats/leetcode');
+app.use('/stats', statsLeetcodeRouter);
 
 // READING IN AND USING index.html
 const path = require('path');
