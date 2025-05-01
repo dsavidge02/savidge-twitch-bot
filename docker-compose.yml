@@ -29,7 +29,21 @@ services:
       context: ./basic-mongo-api
       dockerfile: Dockerfile
     environment:
+      - MONGO_DB_USERNAME=${MONGO_DB_USERNAME}
+      - MONGO_DB_PASSWORD=${MONGO_DB_PASSWORD}
       - PORT=${MONGO_API_PORT}
       - URL=${HOST_URL}
     ports:
       - "3001:3001"
+  
+  authService:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    environment:
+      - MONGO_DB_USERNAME=${MONGO_DB_USERNAME}
+      - MONGO_DB_PASSWORD=${MONGO_DB_PASSWORD}
+      - PORT=${AUTH_SERVICE_PORT}
+      - URL=${HOST_URL}
+    ports:
+      - "3002:3002"
