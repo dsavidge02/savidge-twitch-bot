@@ -1,0 +1,60 @@
+.percentage-bar-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.percentage-bar-title {
+    color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    height: 20%;
+    width: 100%;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.percentage-bar-title.bot {
+    height: 40%;
+}
+
+.percentage-bar-outer-bar {
+    background-color: black;
+    height: 60%;
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 10px solid gray;
+    box-sizing: border-box;
+}
+
+.percentage-bar-current-bar {
+    height: 100%;
+    transition: width 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.percentage-bar-current-text {
+    color: white;
+    font-weight: bold;
+}
+
+.percentage-bar-current-bar.complete {
+    animation: percentageHit;
+    animation-duration: 4s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes percentageHit {
+    0% {background-color: rgb(0, 255, 0);}
+    50% {background-color: rgb(0, 100, 0);}
+    100% {background-color: rgb(0, 255, 0);}
+}

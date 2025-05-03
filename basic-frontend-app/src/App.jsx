@@ -1,9 +1,12 @@
-import './App.css'
+import { Link, Outlet } from 'react-router-dom';
+import './App.css';
 
 const App = () => {
     return (
         <div className="app-content">
-            <span>Welcome to Savidge Apps</span>
+            <main>
+                <Outlet />
+            </main>
         </div>
     );
 };

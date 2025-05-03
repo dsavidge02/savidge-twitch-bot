@@ -1,0 +1,42 @@
+.twitch-content {
+    height: 100%;
+    width: 100%;
+}
+
+.inner-twitch-content {
+    height: 90%;
+    width: 95%;
+    background-color: #c8ad88;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.twitch-main-content {
+    height: 80%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #ad7f4d;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+    font-family: 'MedievalSharp';
+}
+
+.twitch-main-content.full-screen {
+    height: 100%;
+}
+
+.nontwitch-content {
+    height: 20%;
+}
+
+.all-content {
+    height: 80%;
+}
+
+.all-content.full-screen{
+    height: 100%;
+}
