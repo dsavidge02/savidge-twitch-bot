@@ -8,6 +8,9 @@ const cookieParser = require('cookie-parser');
 app.use(express.json());
 app.use(cookieParser());
 
+// CUSTOM IMPORTS
+const { mongoConnector } = require('./utils/mongo');
+
 // READ IN THE CONFIG VALUES
 require('dotenv').config();
 const PORT = process.env.ENVIRONMENT === 'DEV' ? 3000 : process.env.PORT;
@@ -44,6 +47,26 @@ app.use('/register', require('./routes/register'));
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on ${URL}:${PORT}`);
+mongoConnector.connect()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server is running on ${URL}:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('Failed to connect to MongoDB:', err);
+        process.exit(1);
+    });
+
+
+process.on('SIGINT', async () => {
+    console.log('SIGINT received: closing MongoDB connection');
+    await mongoConnector.close();
+    process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+    console.log('SIGTERM received: closing MongoDB connection');
+    await mongoConnector.close();
+    process.exit(0);
 });

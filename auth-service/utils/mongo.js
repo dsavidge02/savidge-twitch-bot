@@ -4,7 +4,7 @@ class MongoConnector {
     constructor () {
         this.client = null;
         this.db = null;
-        this.mongoUri = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.mongodb.net/?retryWrites=true&w=majority`;
+        this.mongoUri = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@initial-web-app.mrfqssl.mongodb.net/?retryWrites=true&w=majority&appName=initial-web-app`;
     }
 
     async connect() {
@@ -12,16 +12,15 @@ class MongoConnector {
             this.client = new MongoClient(this.mongoUri);
             await this.client.connect();
             console.log('Connected to MongoDB.');
-        }
-        if (!this.db) {
             this.db = this.client.db('auth');
         }
-        return this.db;
     }
 
     async getCollection(collectionName = 'users') {
-        const db = await this.connect();
-        return db.collection(collectionName);
+        if (!this.db) {
+            throw new Error('Database not initialized. Did you forget to call connect()?');
+        }
+        return this.db.collection(collectionName);
     }
 
     async getOne(collectionName, field, value) {
@@ -65,6 +64,7 @@ class MongoConnector {
     }
 }
 
+require('dotenv').config();
 const mongoConnector = new MongoConnector();
 module.exports = {
     mongoConnector
