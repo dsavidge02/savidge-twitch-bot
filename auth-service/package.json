@@ -1,12 +1,11 @@
 {
     "name": "auth-service",
-    "version": "1.0.0",
-    "description": "autentication service",
+    "version": "1.0.1",
+    "description": "Authentication Service",
     "main": "index.js",
     "scripts": {
         "start": "node index",
-        "dev": "nodemon index",
-        "test": "jest"
+        "dev": "nodemon index"
     },
     "author": "Daniel Savidge",
     "license": "MIT",
@@ -14,13 +13,16 @@
         "axios": "^1.9.0",
         "bcrypt": "^5.1.1",
         "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "date-fns": "^4.1.0",
         "dotenv": "^16.5.0",
         "express": "^5.1.0",
+        "joi": "^17.13.3",
         "jsonwebtoken": "^9.0.2",
-        "mongodb": "^6.16.0"
+        "mongodb": "^6.16.0",
+        "uuid": "^11.1.0"
     },
     "devDependencies": {
-        "jest": "^29.7.0",
         "nodemon": "^3.1.9"
     }
 }
