@@ -17,9 +17,17 @@ const handleRegister = async (req, res) => {
     }
 
     const { username, email, password } = value;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = {
+        username: username,
+        email: email,
+        password: hashedPassword,
+        roles: { general: 1992 }
+    };
     
     try {
-        const result = await mongoConnector.createOne('users', value, ['username', 'email']);
+        const result = await mongoConnector.createOne('users', newUser, ['username', 'email']);
         res.status(201).json({ message: 'User registered successfully.', user: { username, email } });
     }
     catch (err) {
