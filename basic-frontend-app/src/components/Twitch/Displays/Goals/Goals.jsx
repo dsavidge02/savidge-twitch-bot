@@ -12,14 +12,14 @@ const GoalsDisplay = ({ props }) => {
         if (goalKey === 'followers') {
             return {
                 title: `Follower Count`,
-                current: 61,
+                current: 63,
                 target: 75
             }
         }
         else if (goalKey === 'subs') {
             return {
                 title: `Subscriber Count`,
-                current: 9,
+                current: 10,
                 target: 25
             }
         }
