@@ -23,10 +23,13 @@ class MongoConnector {
         return this.db.collection(collectionName);
     }
 
-    async getOne(collectionName, field, value) {
+    async getOne(collectionName, query) {
+        if (!query || typeof query !== 'object' || Object.keys(query).length === 0) {
+            throw new Error('Query must be an object with at least one key-value pair.');
+        }
+
         try {
             const collection = await this.getCollection(collectionName);
-            const query = { [field]: value };
             const result = await collection.findOne(query);
             return result;
         }
@@ -40,7 +43,8 @@ class MongoConnector {
         try {
             for (const field of unique) {
                 const value = document[field];
-                const existingDoc = await this.getOne(collectionName, field, value);
+                const query = { [field]: value };
+                const existingDoc = await this.getOne(collectionName, query);
                 if (existingDoc) {
                     throw new Error(`Document with ${field} = ${value} already exists.`);
                 }
@@ -56,6 +60,39 @@ class MongoConnector {
         }
     }
 
+    async updateOne(collectionName, document) {
+        if (!document || typeof document !== 'object') {
+            throw new Error('Document must be a valid object.');
+        }
+        
+        const { _id, ...updateFields } = document;
+    
+        if (!_id || Object.keys(updateFields).length === 0) {
+            throw new Error('Invalid document.');
+        }
+    
+        try {
+            const collection = await this.getCollection(collectionName);
+            const filter = { _id: typeof _id === 'string' ? new ObjectId(_id) : _id };
+            const update = { $set: updateFields };
+    
+            const result = await collection.findOneAndUpdate(
+                filter,
+                update,
+                { returnDocument: 'after' }
+            );
+            
+            if (!result) {
+                throw new Error(`No document found with _id: ${_id} in ${collectionName}.`);
+            }
+
+            return result.value;
+        } catch (err) {
+            console.error(`Error updating document in ${collectionName}:`, err);
+            throw err;
+        }
+    }
+
     async close() {
         if (this.client) {
             await this.client.close();
@@ -67,5 +104,6 @@ class MongoConnector {
 require('dotenv').config();
 const mongoConnector = new MongoConnector();
 module.exports = {
-    mongoConnector
+    mongoConnector,
+    ObjectId
 };

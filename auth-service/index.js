@@ -44,12 +44,18 @@ app.get('/', (req, res) => {
 });
 
 app.use('/register', require('./routes/register'));
+app.use('/login', require('./routes/login'));
+app.use('/refresh', require('./routes/refresh'));
+app.use('/logout', require('./routes/logout'));
+app.use('/health', require('./routes/protected/health'));
 
 app.use(errorHandler);
 
+let server;
+
 mongoConnector.connect()
     .then(() => {
-        app.listen(PORT, () => {
+        server = app.listen(PORT, () => {
             console.log(`Server is running on ${URL}:${PORT}`);
         });
     })
@@ -59,14 +65,35 @@ mongoConnector.connect()
     });
 
 
-process.on('SIGINT', async () => {
-    console.log('SIGINT received: closing MongoDB connection');
-    await mongoConnector.close();
-    process.exit(0);
-});
+const shutdown = async (signal) => {
+    console.log(`${signal} received: shutting down gracefully...`);
 
-process.on('SIGTERM', async () => {
-    console.log('SIGTERM received: closing MongoDB connection');
-    await mongoConnector.close();
-    process.exit(0);
+    if (server) {
+        console.log('Closing HTTP server...');
+        server.close(async (err) => {
+            if (err) {
+                console.error('Error closing HTTP server:', err);
+                process.exit(1);
+            }
+            console.log('HTTP server closed.');
+            await mongoConnector.close();
+            console.log('MongoDB connection closed.');
+            process.exit(0);
+        });
+    } else {
+        await mongoConnector.close();
+        console.log('MongoDB connection closed.');
+        process.exit(0);
+    }
+};
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    shutdown('UncaughtException');
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    shutdown('UnhandledRejection');
 });
