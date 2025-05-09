@@ -4,6 +4,6 @@ const { handleResetPassword } = require('../../controllers/resetPasswordControll
 const verifyJWT = require('../../middleware/verifyJWT');
 
 router.route('/')
-    .get(verifyJWT, handleResetPassword);
+    .post(verifyJWT, handleResetPassword);
 
 module.exports = router;

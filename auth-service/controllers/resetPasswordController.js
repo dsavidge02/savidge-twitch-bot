@@ -1,33 +1,28 @@
-const { mongoConnector, ObjectId } = require('../utils/mongo');
+const bcrypt = require('bcrypt');
+
+const { mongoConnector, ObjectId } = require('../utils/mongo');;
 const { userSchema } = require('../schemas/userSchema');
 
 const handleResetPassword = async (req, res) => {
-    // DELETE ACCESS TOKEN ON CLIENT
+    const { password, newPassword } = req.body;
 
-    const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(204);
-    const refreshToken = cookies.jwt;
+    if (!password || !newPassword) return res.status(400).json({ 'message': 'The current and new password are required.' });
+    if (password === newPassword) return res.status(400).json({ 'message': 'The new password must not match the current password.' });
 
-    const foundUser = await mongoConnector.getOne('users', { 'refreshToken': refreshToken });
-    if (!foundUser) {
-        res.clearCookie('jwt', {
-            httpOnly: true,
-            sameSite: 'Lax',
-            maxAge: 24 * 60 * 60 * 1000
-        });
-        return res.sendStatus(204);
+    const id = req._id;
+    const foundUser = await mongoConnector.getOne('users', { '_id': new ObjectId(id) });
+    if (!foundUser) return res.sendStatus(401);
+
+    const pMatch = await bcrypt.compare(password, foundUser.password);
+    if (pMatch) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        foundUser.password = hashedPassword;
+        const result = await mongoConnector.updateOne('users', foundUser);
+        res.json({ 'message': 'Password updated successfully.' });
     }
-
-    foundUser.refreshToken = '';
-    
-    const result = await mongoConnector.updateOne('users', foundUser);
-    
-    res.clearCookie('jwt', { 
-        httpOnly: true,
-        sameSite: 'Lax',
-        maxAge: 24 * 60 * 60 * 1000
-    });
-    res.sendStatus(204);
+    else {
+        res.sendStatus(401);
+    }
 };
 
 module.exports = {

@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const { userSchema } = require('../schemas/userSchema');
 const { mongoConnector } = require('../utils/mongo');
+const ROLES_LIST = require('../config/roles_list');
 
 const handleRegister = async (req, res) => {
     if(!req.body) return res.status(400).json({ message: 'No request body provided.' });
@@ -23,7 +24,7 @@ const handleRegister = async (req, res) => {
         username: username,
         email: email,
         password: hashedPassword,
-        roles: { general: 1992 }
+        roles: { USER: ROLES_LIST.USER }
     };
     
     try {

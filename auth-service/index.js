@@ -48,6 +48,8 @@ app.use('/login', require('./routes/login'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 app.use('/health', require('./routes/protected/health'));
+app.use('/resetPassword', require('./routes/protected/resetPassword'));
+app.use('/updateRoles', require('./routes/protected/updateRoles'));
 
 app.use(errorHandler);
 
