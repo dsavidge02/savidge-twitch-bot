@@ -1,30 +1,46 @@
-const { getUsers, addUser } = require('../utils/mongo');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-const handleNewUser = async (req, res) => {
-    const { user, pwd } = req.body;
-    if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' });
+const { userSchema } = require('../schemas/userSchema');
+const { mongoConnector } = require('../utils/mongo');
+const ROLES_LIST = require('../config/roles_list');
 
-    // check for duplicate usenames in the db
-    const users = await getUsers();
-    const duplicate = users.find(person => person.username === user);
-    if (duplicate) return res.sendStatus(409);
+const handleRegister = async (req, res) => {
+    if(!req.body) return res.status(400).json({ message: 'No request body provided.' });
 
+    const { error, value } = userSchema.validate(req.body, { abortEarly: false });
+
+    if (error) {
+        return res.status(400).json({
+            message: 'User validation failed',
+            details: error.details.map(detail => detail.message)
+        });
+    }
+
+    const { username, email, password } = value;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = {
+        username: username,
+        email: email,
+        password: hashedPassword,
+        roles: [ ROLES_LIST.USER ]
+    };
+    
     try {
-        //encrypt the password
-        const hashedPwd = await bcrypt.hash(pwd, 10);
-        //store the new user
-        const newUser = { 
-            "username": user,
-            "roles": { "User": 2002 },
-            "password": hashedPwd
-        };
-        addUser(newUser);
-        res.status(201).json({ 'success': `New user ${user} created` });
+        const result = await mongoConnector.createOne('users', newUser, ['username', 'email']);
+        res.status(201).json({ message: 'User registered successfully.', user: { username, email } });
     }
     catch (err) {
-        res.status(500).json({ 'message': err.message });
+        if (err.message.includes('Document with username') || err.message.includes('Document with email')) {
+            return res.status(409).json({ message: err.message });
+        }
+
+        console.error('Error registering user:', err);
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 
-module.exports = { handleNewUser }
+module.exports = {
+    handleRegister
+};

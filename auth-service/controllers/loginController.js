@@ -1,55 +1,60 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { getUsers, refreshUser } = require('../utils/mongo');
-require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+const { mongoConnector, ObjectId } = require('../utils/mongo');
+const { userSchema } = require('../schemas/userSchema');
+
+const privateKey = fs.readFileSync(path.join(__dirname, '../certs/private.pem'));
 
 const handleLogin = async (req, res) => {
-    const { user, pwd } = req.body;
+    const { username, password } = req.body;
 
-    if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required.' });
-
-    try {
-        const users = await getUsers();
-        const foundUser = users.find(person => person.username === user);
-        if (!foundUser) return res.sendStatus(401);
-
-        const match = await bcrypt.compare(pwd, foundUser.password);
-        if (!match) return res.sendStatus(401);
-
-        const roles = Object.values(foundUser.roles);
+    if (!username || !password) return res.status(400).json({ 'message': 'Username and password are required.' });
+    
+    const foundUser = await mongoConnector.getOne('users', { 'username': username });
+    if (!foundUser) return res.sendStatus(401);
+    
+    const pMatch = await bcrypt.compare(password, foundUser.password);
+    if (pMatch) {
         const accessToken = jwt.sign(
             {
-                UserInfo: {
-                    username: foundUser.username,
-                    roles: roles
+                "UserInfo": {
+                    "_id": foundUser._id,
+                    "username": foundUser.username,
+                    "roles": foundUser.roles
                 }
             },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: '30s'}
+            privateKey,
+            {
+                "algorithm": 'RS256', 
+                "expiresIn": '30s' 
+            }
         );
-
         const refreshToken = jwt.sign(
-            { username: foundUser.username },
+            { "username": foundUser.username },
             process.env.REFRESH_TOKEN_SECRET,
-            { expiresIn: '1d' }
+            { "expiresIn": '1d'}
         );
         
-        const currentUser = { ...foundUser, refreshToken: refreshToken };
-        await refreshUser(currentUser);
+        foundUser.refreshToken = refreshToken;
+
+        const result = await mongoConnector.updateOne('users', foundUser);
 
         res.cookie('jwt', refreshToken, {
             httpOnly: true,
-            sameSite: 'None',
-            secure: true,
+            sameSite: 'Lax',
+            // secure: true,
             maxAge: 24 * 60 * 60 * 1000
         });
 
         res.json({ accessToken });
     }
-    catch (err) {
-        console.error('Login error: ', err);
-        res.sendStatus(500);
+    else {
+        res.sendStatus(401);
     }
 };
 
-module.exports = { handleLogin };
+module.exports = {
+    handleLogin
+};

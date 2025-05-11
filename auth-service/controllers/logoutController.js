@@ -1,25 +1,35 @@
-const { getUsers, refreshUser } = require("../utils/mongo");
+const { mongoConnector, ObjectId } = require('../utils/mongo');
+const { userSchema } = require('../schemas/userSchema');
 
 const handleLogout = async (req, res) => {
-    // On client, also delete the accessToken
+    // DELETE ACCESS TOKEN ON CLIENT
 
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(204);
     const refreshToken = cookies.jwt;
 
-    const users = await getUsers();
-    const foundUser = users.find(person => person.refreshToken === refreshToken);
+    const foundUser = await mongoConnector.getOne('users', { 'refreshToken': refreshToken });
     if (!foundUser) {
-        res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true });
+        res.clearCookie('jwt', {
+            httpOnly: true,
+            sameSite: 'Lax',
+            maxAge: 24 * 60 * 60 * 1000
+        });
         return res.sendStatus(204);
     }
-    
-    // delete refreshToken in db
-    const currentUser = { ...foundUser, refreshToken: '' };
-    await refreshUser(currentUser);
 
-    res.clearCookie('jwt', {httpOnly: true, sameSite: 'None', secure: true }); // secure set to true in prod
+    foundUser.refreshToken = '';
+    
+    const result = await mongoConnector.updateOne('users', foundUser);
+    
+    res.clearCookie('jwt', { 
+        httpOnly: true,
+        sameSite: 'Lax',
+        maxAge: 24 * 60 * 60 * 1000
+    });
     res.sendStatus(204);
 };
 
-module.exports = { handleLogout };
+module.exports = {
+    handleLogout
+};
