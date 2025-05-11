@@ -1,8 +1,11 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const fs = require('fs');
+const path = require('path');
 const { mongoConnector, ObjectId } = require('../utils/mongo');
 const { userSchema } = require('../schemas/userSchema');
+
+const privateKey = fs.readFileSync(path.join(__dirname, '../certs/private.pem'));
 
 const handleLogin = async (req, res) => {
     const { username, password } = req.body;
@@ -14,18 +17,19 @@ const handleLogin = async (req, res) => {
     
     const pMatch = await bcrypt.compare(password, foundUser.password);
     if (pMatch) {
-        const roles = Object.values(foundUser.roles).filter(Boolean);
-
         const accessToken = jwt.sign(
             {
                 "UserInfo": {
                     "_id": foundUser._id,
                     "username": foundUser.username,
-                    "roles": roles
+                    "roles": foundUser.roles
                 }
             },
-            process.env.ACCESS_TOKEN_SECRET,
-            { "expiresIn": '30s' }
+            privateKey,
+            {
+                "algorithm": 'RS256', 
+                "expiresIn": '30s' 
+            }
         );
         const refreshToken = jwt.sign(
             { "username": foundUser.username },

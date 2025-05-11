@@ -24,7 +24,7 @@ const handleRegister = async (req, res) => {
         username: username,
         email: email,
         password: hashedPassword,
-        roles: { USER: ROLES_LIST.USER }
+        roles: [ ROLES_LIST.USER ]
     };
     
     try {

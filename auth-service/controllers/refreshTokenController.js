@@ -3,10 +3,14 @@ const jwt = require('jsonwebtoken');
 const { mongoConnector, ObjectId } = require('../utils/mongo');
 const { userSchema } = require('../schemas/userSchema');
 
+const fs = require('fs');
+const path = require('path');
+
+const publicKey = fs.readFileSync(path.join(__dirname, '../certs/public.pem'));
+
 const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
     if (!cookies?.jwt) return res.sendStatus(401);
-    console.log(cookies.jwt);
     const refreshToken = cookies.jwt;
 
     const foundUser = await mongoConnector.getOne('users', { 'refreshToken': refreshToken });
@@ -26,7 +30,10 @@ const handleRefreshToken = async (req, res) => {
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { "expiresIn": '30s' }
+                {
+                    expiresIn: '30s',
+                    algorithms: ['RS256']
+                }
             );
             res.json({ accessToken });
         }

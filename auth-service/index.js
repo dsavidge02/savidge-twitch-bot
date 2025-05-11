@@ -50,6 +50,7 @@ app.use('/logout', require('./routes/logout'));
 app.use('/health', require('./routes/protected/health'));
 app.use('/resetPassword', require('./routes/protected/resetPassword'));
 app.use('/updateRoles', require('./routes/protected/updateRoles'));
+app.use('/deleteUser', require('./routes/protected/deleteUser'));
 
 app.use(errorHandler);
 

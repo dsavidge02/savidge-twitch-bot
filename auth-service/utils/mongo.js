@@ -93,6 +93,33 @@ class MongoConnector {
         }
     }
 
+    async deleteOne(collectionName, document) {
+        if (!document || typeof document !== 'object') {
+            throw new Error('Document must be a valid object.');
+        }
+
+        const { _id } = document;
+
+        if (!_id) throw new Error('Invalid document.');
+
+        try {
+            const collection = await this.getCollection(collectionName);
+            const id = typeof _id === 'string' ? new ObjectId(_id) : _id;
+
+            const result = await collection.deleteOne({ _id: id });
+
+            if (!result) {
+                throw new Error(`No document found with _id: ${_id} in ${collectionName}.`);
+            }
+
+            return result.value;
+        }
+        catch (err) {
+            console.error(`Error updating document in ${collectionName}:`, err);
+            throw err;
+        }
+    }
+
     async close() {
         if (this.client) {
             await this.client.close();

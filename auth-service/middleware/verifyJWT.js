@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+
+const publicKey = fs.readFileSync(path.join(__dirname, '../certs/public.pem'));
 
 const verifyJWT = (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -7,7 +10,8 @@ const verifyJWT = (req, res, next) => {
     const token = authHeader.split(' ')[1];
     jwt.verify(
         token,
-        process.env.ACCESS_TOKEN_SECRET,
+        publicKey,
+        { algorithms: ['RS256'] },
         (err, decoded) => {
             if (err) return res.sendStatus(403);
             req._id = decoded.UserInfo._id;
