@@ -1,0 +1,14 @@
+.creator-header-container {
+    display: flex;
+    background-color: red;
+}
+
+.creator-header-brand-container {
+    flex: 1 1 auto;
+    background-color: aquamarine;
+}
+
+.creator-header-links-container {
+    flex: 1 1 auto;
+    background-color: yellow;
+}
