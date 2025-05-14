@@ -35,6 +35,7 @@ const corsOptions = {
             callback(new Error('Not allowed by CORS'));
         }
     },
+    credentials: true,
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
@@ -51,6 +52,7 @@ app.use('/health', require('./routes/protected/health'));
 app.use('/resetPassword', require('./routes/protected/resetPassword'));
 app.use('/updateRoles', require('./routes/protected/updateRoles'));
 app.use('/deleteUser', require('./routes/protected/deleteUser'));
+app.use('/users', require('./routes/protected/users'));
 
 app.use(errorHandler);
 

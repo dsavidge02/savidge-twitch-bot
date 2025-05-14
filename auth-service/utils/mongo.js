@@ -23,6 +23,18 @@ class MongoConnector {
         return this.db.collection(collectionName);
     }
 
+    async getCollectionArray(collectionName = 'users') {
+        try {
+            const collection = await this.getCollection(collectionName);
+            const result = await collection.find().toArray();
+            return result;
+        }
+        catch (err) {
+            console.error(`Error finding documents in ${collectionName}:`, err);
+            throw err;
+        }
+    }
+
     async getOne(collectionName, query) {
         if (!query || typeof query !== 'object' || Object.keys(query).length === 0) {
             throw new Error('Query must be an object with at least one key-value pair.');

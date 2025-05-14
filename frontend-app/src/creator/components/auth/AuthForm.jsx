@@ -1,4 +1,6 @@
 import { useReducer } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import './AuthForm.css';
 
 const AuthFormReducer = (state, action) => {
@@ -32,7 +34,8 @@ const AuthFormReducer = (state, action) => {
 }
 
 const AuthForm = ({ params }) => {
-    const { formName, initialState, formSubmit } = params;
+    const navigate = useNavigate();
+    const { formName, initialState, formSubmit, formNavigate } = params;
     const [authFormState, setAuthFormState] = useReducer(AuthFormReducer, initialState);
 
     const handleFormInputChange = (e) => {
@@ -73,11 +76,18 @@ const AuthForm = ({ params }) => {
         return allValid;
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (validate()) {
-            formSubmit(authFormState);
+            const submitResponse = await formSubmit(authFormState);
+            if (submitResponse) {
+                setAuthFormState({
+                    type: 'RESET_FORM'
+                });
+            }
+            console.log(formNavigate);
+            navigate(formNavigate, { replace: true });
         }
     }
 

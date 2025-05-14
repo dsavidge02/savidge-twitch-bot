@@ -1,6 +1,11 @@
+import { useLocation } from 'react-router-dom';
+
 import AuthForm from "./AuthForm";
 
 const Register = () => {
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/savidge_af/register";
+
     const formName = "REGISTER";
 
     const initialState = {
@@ -48,7 +53,8 @@ const Register = () => {
     const params = {
         formName,
         initialState,
-        formSubmit: handleRegister
+        formSubmit: handleRegister,
+        formNavigate: from
     };
     
     return (
