@@ -13,8 +13,8 @@ const { mongoConnector } = require('./utils/mongo');
 
 // READ IN THE CONFIG VALUES
 require('dotenv').config();
-const PORT = process.env.ENVIRONMENT === 'DEV' ? 3000 : process.env.PORT;
-const URL = process.env.ENVIRONMENT === 'DEV' ? 'http://localhost' : process.env.PORT;
+const PORT = process.env.ENVIRONMENT === 'DEV' ? 4000 : process.env.PORT;
+const URL = process.env.ENVIRONMENT === 'DEV' ? 'http://localhost' : process.env.URL;
 
 // CUSTOM MIDDLEWARE
 const { logger } = require('./middleware/logEvents');
@@ -22,7 +22,7 @@ app.use(logger);
 const { errorHandler } = require('./middleware/errorHandler');
 
 // CORS
-const whitelist = ['https://savidgeapps.com', 'http://localhost:3000'];
+const whitelist = ['https://savidgeapps.com', 'http://localhost:5173'];
 const corsOptions = {
     origin: (origin, callback) => {
         if (process.env.ENVIRONMENT === 'DEV' && !origin) {
@@ -35,6 +35,7 @@ const corsOptions = {
             callback(new Error('Not allowed by CORS'));
         }
     },
+    credentials: true,
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
@@ -51,6 +52,7 @@ app.use('/health', require('./routes/protected/health'));
 app.use('/resetPassword', require('./routes/protected/resetPassword'));
 app.use('/updateRoles', require('./routes/protected/updateRoles'));
 app.use('/deleteUser', require('./routes/protected/deleteUser'));
+app.use('/users', require('./routes/protected/users'));
 
 app.use(errorHandler);
 
