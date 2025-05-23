@@ -6,8 +6,11 @@ import CreatorWrapper from './creator/components/structures/CreatorWrapper';
 import CreatorHome from './creator/components/Home/CreatorHome';
 import Register from './creator/components/auth/Register';
 import Login from './creator/components/auth/Login';
+import Unauthorized from './creator/components/auth/Unauthorized';
 import CreatorUsers from './creator/components/Users/CreatorUsers';
+import CreatorUsersAlt from './creator/components/Users/CreatorUsersAlt';
 import RequireAuth from './creator/components/auth/RequireAuth';
+import DenyAuth from './creator/components/auth/DenyAuth';
 
 import { ViewProvider } from './creator/contexts/ViewContext';
 import { AuthProvider } from './creator/contexts/AuthContext';
@@ -23,11 +26,19 @@ function Router() {
                             <Route index element={<Home />} />
                             <Route path="savidge_af" element={<CreatorWrapper />} >
                                 <Route index element={<CreatorHome />} />
-                                <Route path='register' element={<Register />} />
-                                <Route path='login' element={<Login />} />
 
-                                <Route element={<RequireAuth allowedRoles={[2002]}/>} >
+                                <Route element={<DenyAuth />}>
+                                    <Route path='register' element={<Register />} />
+                                    <Route path='login' element={<Login />} />
+                                </Route>
+
+                                <Route element={<RequireAuth allowedRoles={[1992]} />}>
+                                    <Route path='unauthorized' element={<Unauthorized />} />
+                                </Route>
+
+                                <Route element={<RequireAuth allowedRoles={[2002]} />} >
                                     <Route path='users' element={<CreatorUsers />} />
+                                    <Route path='alt' element={<CreatorUsersAlt />} />
                                 </Route>
 
                                 <Route path='*' element={<Navigate to='/savidge_af' />} />

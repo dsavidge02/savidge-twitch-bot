@@ -85,9 +85,12 @@ const AuthForm = ({ params }) => {
                 setAuthFormState({
                     type: 'RESET_FORM'
                 });
+                console.log(formNavigate);
+                navigate(formNavigate, { replace: true });
             }
-            console.log(formNavigate);
-            navigate(formNavigate, { replace: true });
+            else {
+                console.log('error');
+            }
         }
     }
 

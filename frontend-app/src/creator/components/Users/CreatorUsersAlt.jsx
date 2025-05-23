@@ -3,7 +3,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 import './CreatorUsers.css';
 
-const CreatorUsers = () => {
+const CreatorUsersAlt = () => {
     const [users, setUsers] = useState();
     const axiosPrivate = useAxiosPrivate();
 
@@ -30,12 +30,10 @@ const CreatorUsers = () => {
             controller.abort();
         }
     }, []);
-
     console.log(users);
-    
     return (
         <div className="creator-users-content">
-            <h2>Welcome to the users page for savidge_af!</h2>
+            <h2>Welcome to the alt users page for savidge_af!</h2>
             <h3>USERS LIST</h3>
             {users?.length ?
             (
@@ -48,4 +46,4 @@ const CreatorUsers = () => {
     );
 };
 
-export default CreatorUsers;
+export default CreatorUsersAlt;

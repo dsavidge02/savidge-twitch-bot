@@ -6,7 +6,7 @@ const { userSchema } = require('../schemas/userSchema');
 const fs = require('fs');
 const path = require('path');
 
-const publicKey = fs.readFileSync(path.join(__dirname, '../certs/public.pem'));
+const privateKey = fs.readFileSync(path.join(__dirname, '../certs/private.pem'));
 
 const handleRefreshToken = async (req, res) => {
     const cookies = req.cookies;
@@ -29,10 +29,10 @@ const handleRefreshToken = async (req, res) => {
                         "roles": foundUser.roles
                     }
                 },
-                process.env.ACCESS_TOKEN_SECRET,
+                privateKey,
                 {
-                    expiresIn: '30s',
-                    algorithms: ['RS256']
+                    "algorithm": 'RS256', 
+                    "expiresIn": '30s' 
                 }
             );
             res.json({ accessToken });

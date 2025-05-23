@@ -1,10 +1,13 @@
 import { useLocation } from 'react-router-dom';
 
 import AuthForm from "./AuthForm";
+import { useAuthContext } from "../../contexts/AuthContext";
 
 const Register = () => {
     const location = useLocation();
     const from = location.state?.from?.pathname || "/savidge_af/register";
+
+    const { doRegister } = useAuthContext();
 
     const formName = "REGISTER";
 
@@ -41,13 +44,15 @@ const Register = () => {
         }
     };
 
-    const handleRegister = (state) => {
+    const handleRegister = async (state) => {
         const submitBody = {
             email: state.email.value,
             username: state.username.value,
             password: state.pwd.value
         };
         console.log(submitBody);
+        const response = await doRegister(submitBody);
+        return response;
     };
 
     const params = {
