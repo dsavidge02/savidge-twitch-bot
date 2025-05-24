@@ -11,7 +11,7 @@ import CreatorUsers from './creator/components/Users/CreatorUsers';
 import CreatorUsersAlt from './creator/components/Users/CreatorUsersAlt';
 import RequireAuth from './creator/components/auth/RequireAuth';
 import DenyAuth from './creator/components/auth/DenyAuth';
-
+import TwitchVerify from './creator/components/auth/twitch/TwitchVerify';
 import { ViewProvider } from './creator/contexts/ViewContext';
 import { AuthProvider } from './creator/contexts/AuthContext';
 
@@ -30,6 +30,7 @@ function Router() {
                                 <Route element={<DenyAuth />}>
                                     <Route path='register' element={<Register />} />
                                     <Route path='login' element={<Login />} />
+                                    <Route path='verify' element={<TwitchVerify />} />
                                 </Route>
 
                                 <Route element={<RequireAuth allowedRoles={[1992]} />}>

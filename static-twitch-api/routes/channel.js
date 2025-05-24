@@ -14,10 +14,11 @@ router.get('/followers', async (req, res) => {
             },
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Client-ID': clientId
+                'Client-ID': clientId,
+                'scope': ["moderator:read:followers"]
             }
         });
-
+        console.log(response.data);
         res.json({
             count: response.data.total
         });
