@@ -1,0 +1,6 @@
+.login-form-container {
+    width: fit-content;
+    margin: auto auto;
+    display: flex;
+    align-items: center;
+}

@@ -1,33 +1,103 @@
-.auth-form-container-border {
-    flex: 1 1 auto;
-    display: flex;
-    height: auto;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-}
-
-.auth-form-container-border.includes--border {
-    padding: 2%;
-}
-
 .auth-form-container {
-    flex: 1 1 auto;
+    background-color: white;
+    width: fit-content;
+    height: auto;
+    align-self: center;
+    justify-self: center;
+    flex: 1 1;
+
+    padding: 5% 5%;
+    border-radius: 20px;
+    border: 2px solid black;
+
     display: flex;
     flex-direction: column;
-    width: 100%;
-    background-color: orange;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 10px;
 }
 
 .auth-form-header-container {
-    background-color: purple;
+    background-color: transparent;
+    width: fit-content;
+    align-self: center;
     flex: 0 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    border-radius: 20px;
+    border: 2px solid black;
+    padding: 10px 10px;
+}
+
+.auth-form-header-container p {
+    flex: 0 0;
+    text-align: center;
+    /* font-weight: bold; */
+    font-size: 120px;
+    position: relative;
+}
+
+.auth-form-header-container p::after {
+    content: '';
+    background: red;
+    height: 10px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+
+.auth-form-submit-error-container {
+    flex: 0 0;
+    width: fit-content;
+    transition: all 0.3s ease-in-out;
+    align-self: center;
+    display: flex;
+}
+
+.auth-form-submit-error {
+    background-color: lightpink;
+    padding: 10px 10px;
+    border-radius: 20px;
+    border: 2px solid black;
+    opacity: 1;
+    flex: 1 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-form-submit-error.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.auth-form-submit-error.visible {
+  opacity: 1;
+}
+
+.auth-form-error-message {
+    flex: 1 1;
+    color: firebrick;
+}
+
+.auth-form-error-link {
+    flex: 1 1;
 }
 
 .auth-form {
     background-color: blueviolet;
-    flex: 1 1;
+    flex: 0 0;
+    width: fit-content;
+    align-self: center;
+    padding: 10px 10px;
+    border-radius: 20px;
+    border: 2px solid black;
+
     display: flex;
     flex-direction: column;
 }
@@ -50,5 +120,10 @@
 }
 
 .auth-form-footer-container {
-    flex: 0 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: fit-content;
 }

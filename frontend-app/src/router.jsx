@@ -12,6 +12,8 @@ import CreatorUsersAlt from './creator/components/Users/CreatorUsersAlt';
 import RequireAuth from './creator/components/auth/RequireAuth';
 import DenyAuth from './creator/components/auth/DenyAuth';
 import TwitchVerify from './creator/components/auth/twitch/TwitchVerify';
+import TwitchCallback from './creator/components/auth/twitch/TwitchCallback';
+import TwitchAPIAdmin from './creator/components/auth/twitch/TwitchAPIAdmin';
 import { ViewProvider } from './creator/contexts/ViewContext';
 import { AuthProvider } from './creator/contexts/AuthContext';
 
@@ -40,6 +42,8 @@ function Router() {
                                 <Route element={<RequireAuth allowedRoles={[2002]} />} >
                                     <Route path='users' element={<CreatorUsers />} />
                                     <Route path='alt' element={<CreatorUsersAlt />} />
+                                    <Route path='callback' element={<TwitchCallback />} />
+                                    <Route path='admin' element={<TwitchAPIAdmin />} />
                                 </Route>
 
                                 <Route path='*' element={<Navigate to='/savidge_af' />} />

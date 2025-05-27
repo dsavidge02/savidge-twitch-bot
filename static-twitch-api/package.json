@@ -12,8 +12,10 @@
     "license": "MIT",
     "dependencies": {
         "axios": "^1.9.0",
+        "cors": "^2.8.5",
         "dotenv": "^16.5.0",
         "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
         "qs": "^6.14.0",
         "supertest": "^7.1.0"
     },
@@ -22,6 +24,8 @@
         "nodemon": "^3.1.9"
     },
     "jest": {
-        "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"]
+        "setupFilesAfterEnv": [
+            "<rootDir>/jest.setup.js"
+        ]
     }
 }

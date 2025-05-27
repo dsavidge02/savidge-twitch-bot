@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import { createContext, useContext, useState, useEffect, useReducer } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 import axios, { axiosPrivate } from "../api/axios";
 
@@ -31,14 +31,14 @@ export const AuthProvider = ({ children }) => {
             }
         };
 
-        if (!auth?.accessToken) {
+        if (!auth?.accessToken && loading) {
             tryRefresh();
         }
         else {
             setLoading(false);
         }
 
-    }, []);
+    }, [auth?.accessToken]);
 
     const decoded = auth?.accessToken
         ? jwtDecode(auth.accessToken)
@@ -60,22 +60,25 @@ export const AuthProvider = ({ children }) => {
             );
             const accessToken = response?.data?.accessToken;
             setAuth({ accessToken });
-            return true;
+            return { success: true, status: 200 };
         }
         catch (err) {
             if (!err?.response) {
                 console.log('No Server Response');
+                return { success: false, status: 500 };
             }
             else if (err.response?.status === 400) {
                 console.log('Missing username or password');
+                return { success: false, status: 400 };
             }
             else if (err.response?.status === 401) {
                 console.log('Unauthorized');
+                return { success: false, status: 401 };
             }
             else {
                 console.log('Login Failed');
+                return { success: false, status: 500 };
             }
-            return false;
         }
     }
 
@@ -88,22 +91,25 @@ export const AuthProvider = ({ children }) => {
                     withCredentials: true
                 }
             );
-            return true;
+            return { success: true, status: 201 };
         }
         catch (err) {
             if (!err?.response) {
                 console.log('No Server Response');
+                return { success: false, status: 500 };
             }
             else if (err.response?.status === 400) {
                 console.log('Missing email, username or password');
+                return { success: false, status: 400 };
             }
             else if (err.response?.status === 409) {
                 console.log('User already exists');
+                return { success: false, status: 409 };
             }
             else {
                 console.log('Register Failed');
+                return { success: false, status: 500 };
             }
-            return false;
         }
     }
 
@@ -129,7 +135,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ auth, setAuth, isAuth, id, username, roles, doLogin, doLogout, doRegister }}>
+        <AuthContext.Provider value={{ auth, setAuth, loading, isAuth, id, username, roles, doLogin, doLogout, doRegister }}>
             { children }
         </AuthContext.Provider>
     );
