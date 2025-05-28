@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { useAuthContext } from "../../contexts/AuthContext";
 import AuthForm from "./AuthForm";
 
+import './Login.css';
+
 const LOGIN_URL = '/login';
 
 const Login = () => {
@@ -26,6 +28,7 @@ const Login = () => {
             validator: (value, _) => (typeof value === 'string' && value !== ''),
             valid: true,
             default: '',
+            type: 'password',
             placeholder: 'Password',
         }
     };
@@ -39,15 +42,30 @@ const Login = () => {
         return response;
     }
 
+    const loginErrors = {
+        400: {
+            message: "Missing username or password"
+        },
+        401: {
+            message: "Incorrect username or password"
+        },
+        500: {
+            message: "I have no clue how you got here"
+        }
+    }
+
     const params = {
         formName,
         initialState,
         formSubmit: handleLogin,
-        formNavigate: from
+        formNavigate: from,
+        formErrors: loginErrors
     };
 
     return (
-        <AuthForm params={params} />
+        <div className="login-form-container">
+            <AuthForm params={params} />
+        </div>
     );
 };
 
