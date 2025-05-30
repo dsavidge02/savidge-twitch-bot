@@ -5,8 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "node index",
-        "dev": "nodemon index",
-        "test": "jest"
+        "dev": "nodemon index"
     },
     "author": "Daniel Savidge",
     "license": "MIT",
@@ -20,12 +19,6 @@
         "supertest": "^7.1.0"
     },
     "devDependencies": {
-        "jest": "^29.7.0",
         "nodemon": "^3.1.9"
-    },
-    "jest": {
-        "setupFilesAfterEnv": [
-            "<rootDir>/jest.setup.js"
-        ]
     }
 }

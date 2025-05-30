@@ -14,7 +14,7 @@ const DenyAuth = () => {
     return (
         !id
             ? <Outlet />
-            : <Navigate to="/savidge_af/profile" />
+            : <Navigate to="/profile" />
     );
 };
 
