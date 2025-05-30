@@ -12,13 +12,13 @@ const CreatorHome = () => {
             {
                 username === "" ? (
                     <div className="creator-home-content-not-auth">
-                        <p>YOU ARE NOT LOGGED IN</p>
+                        <p>Hello There!</p>
                     </div>
                 )
                 :
                 (
                     <div className="creator-home-content-auth">
-                        <p>Welcome {`${username}`}!</p>
+                        <p>Hello {`${username}`}!</p>
                     </div>
                 )
             }
