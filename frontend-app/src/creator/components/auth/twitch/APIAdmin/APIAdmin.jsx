@@ -58,7 +58,7 @@ const APIAdmin =  () => {
             finally {
                 setIsExchanging(false);
             }
-        }
+        };
 
         const code = searchParams.get("code");
         const returnedState = searchParams.get("state");
@@ -68,7 +68,7 @@ const APIAdmin =  () => {
                 setAdminOauthState("");
                 await exchangeCode(code);
             }
-            else if (code && returnedState !== adminOauthState) {
+            else if (code && returnedState && returnedState !== adminOauthState) {
                 setAdminOauthState("");
             }
             await loadData();
@@ -81,7 +81,7 @@ const APIAdmin =  () => {
         e.preventDefault();
 
         const admin_oauth_state = crypto.randomUUID();
-        setAdminOauthState(admin_oauth_state)
+        setAdminOauthState(admin_oauth_state);
 
         const params = new URLSearchParams({
             response_type: "code",
