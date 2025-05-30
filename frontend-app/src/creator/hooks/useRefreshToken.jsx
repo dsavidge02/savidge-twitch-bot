@@ -1,5 +1,7 @@
 import axios from '../api/axios';
 import { useAuthContext } from '../contexts/AuthContext';
+import { decodeToken } from '../utils/decodeToken';
+
 
 const useRefreshToken = () => {
     const { setAuth } = useAuthContext();
@@ -7,10 +9,10 @@ const useRefreshToken = () => {
         const response = await axios.get('/refresh', {
             withCredentials: true
         });
-        setAuth(prev => ({
-            ...prev,
-            accessToken: response.data.accessToken
-        }));
+        const newAuth = decodeToken(response.data.accessToken);
+        if (newAuth) {
+            setAuth(newAuth);
+        }
         return response.data.accessToken;
     }
     return refresh;

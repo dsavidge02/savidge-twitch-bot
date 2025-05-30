@@ -1,9 +1,9 @@
 import { useLocation } from 'react-router-dom';
 
 import { useAuthContext } from "../../contexts/AuthContext";
-import AuthForm from "./AuthForm";
 
 import './Login.css';
+import CustomForm from '../structures/CustomForm/CustomForm';
 
 const LOGIN_URL = '/login';
 
@@ -22,6 +22,7 @@ const Login = () => {
             valid: true,
             default: '',
             placeholder: 'Username',
+            errorMessage: 'Invalid username.'
         },
         pwd: {
             value: '',
@@ -30,6 +31,7 @@ const Login = () => {
             default: '',
             type: 'password',
             placeholder: 'Password',
+            errorMessage: 'Invalid password.'
         }
     };
 
@@ -54,17 +56,9 @@ const Login = () => {
         }
     }
 
-    const params = {
-        formName,
-        initialState,
-        formSubmit: handleLogin,
-        formNavigate: from,
-        formErrors: loginErrors
-    };
-
     return (
         <div className="login-form-container">
-            <AuthForm params={params} />
+            <CustomForm formName={"Login"} initialState={initialState} action={handleLogin} redirect={from} nap={0} formErrors={loginErrors}/>
         </div>
     );
 };

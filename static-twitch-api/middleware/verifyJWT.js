@@ -17,6 +17,7 @@ const verifyJWT = (req, res, next) => {
             req._id = decoded.UserInfo._id;
             req.username = decoded.UserInfo.username;
             req.roles = decoded.UserInfo.roles;
+            req.twitch_user_id = decoded.UserInfo.twitch_user_id;
             next();
         }
     );

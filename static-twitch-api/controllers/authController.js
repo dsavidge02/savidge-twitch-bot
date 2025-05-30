@@ -10,9 +10,11 @@ const { setToken, getAccessToken } = require('../utils/twitchAdminService');
 const { verifyUser } = require('../utils/twitchUserService');
 
 const handleGetToken = async (req, res) => {
-    const access_token = getAccessToken();
+    const token = getAccessToken();
     return res.json({
-        access_token
+        access_token: token.accessToken,
+        refresh_token: token.refreshToken,
+        expires_at: token.expiresAt,
     });
 }
 
@@ -46,7 +48,7 @@ const handleGenerateToken = async (req, res) => {
     if (!code) return res.status(400).json({ error: 'Authorization code is required.' });
 
     try {
-        const redirectUri = "http://localhost:5173/savidge_af/callback";
+        const redirectUri = "http://localhost:5173/savidge_af/admin";
         const newToken = await fetchUserAccessToken(code, redirectUri);
         setToken(newToken);
         const { access_token, refresh_token, expires_in } = newToken;
@@ -72,10 +74,11 @@ const handleVerifyUser = async (req, res) => {
         const newToken = await fetchUserAccessToken(code, redirectUri);
         const user = await verifyUser(newToken);
 
-        if (user.following) {
+        if (user.allowed) {
             return res.status(200).json({ 
                 email: user.email,
-                login: user.login
+                login: user.login,
+                twitch_user_id: user.id
             });
         }
         else {

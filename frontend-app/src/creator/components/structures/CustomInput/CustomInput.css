@@ -1,0 +1,17 @@
+.custom-input-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 5px;
+}
+
+.custom-input {
+    padding: .5em;
+    text-align: center;
+    border-radius: 10px;
+    box-sizing: border-box;
+
+    border: 2px solid black;
+    overflow: hidden;
+    /* box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5), 0 15px 40px rgba(0, 0, 0, 0.10); */
+}

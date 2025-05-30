@@ -1,0 +1,19 @@
+.custom-header-link-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+}
+
+.custom-header-link-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.custom-header-link-name {
+    white-space: nowrap;
+    height: 100%;
+}

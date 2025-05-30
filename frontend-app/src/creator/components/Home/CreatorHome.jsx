@@ -2,26 +2,26 @@ import './CreatorHome.css';
 import { useAuthContext } from '../../contexts/AuthContext';
 
 const CreatorHome = () => {
-    const { isAuth } = useAuthContext();
+    const { getUsername } = useAuthContext();
+    
+    const username = getUsername();
 
     return (
         <div className="creator-home-content">
             <h2>Welcome to the unofficial page for savidge_af!</h2>
             {
-                !isAuth && (
+                username === "" ? (
                     <div className="creator-home-content-not-auth">
                         <p>YOU ARE NOT LOGGED IN</p>
                     </div>
                 )
-            }
-            {
-                isAuth && (
+                :
+                (
                     <div className="creator-home-content-auth">
-                        <p>YOU ARE LOGGED IN</p>
+                        <p>Welcome {`${username}`}!</p>
                     </div>
                 )
             }
-
         </div>
     )
 };

@@ -1,0 +1,22 @@
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    
+    gap: 10px;
+}
+
+.profile-header-content {
+    display: flex;
+    width: fit-content;
+    height: fit-content;
+}
+
+.profile-attributes-container {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
+}

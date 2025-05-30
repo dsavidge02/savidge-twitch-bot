@@ -1,4 +1,3 @@
-import { jwtDecode } from "jwt-decode";
 import { createContext, useContext, useState, useEffect } from "react";
 
 import axios, { axiosPrivate } from "../api/axios";
@@ -7,47 +6,11 @@ const AuthContext = createContext(null);
 
 export const useAuthContext = () => useContext(AuthContext);
 
+import { decodeToken } from "../utils/decodeToken";
+
 export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState({});
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const tryRefresh = async() => {
-            try {
-                const response = await axios.get('/refresh', {
-                    withCredentials: true
-                });
-                setAuth(prev => ({
-                    ...prev,
-                    accessToken: response.data.accessToken 
-                }));
-            }
-            catch (err) {
-                console.log("No refresh token or refresh failed:", err);
-                setAuth({});
-            }
-            finally {
-                setLoading(false);
-            }
-        };
-
-        if (!auth?.accessToken && loading) {
-            tryRefresh();
-        }
-        else {
-            setLoading(false);
-        }
-
-    }, [auth?.accessToken]);
-
-    const decoded = auth?.accessToken
-        ? jwtDecode(auth.accessToken)
-        : undefined;
-
-    const isAuth = !!decoded;
-    const id =  isAuth ? decoded.UserInfo?._id : "";
-    const username = isAuth ? decoded?.UserInfo?.username : "";
-    const roles = isAuth ? decoded?.UserInfo?.roles : [];
+    const [loading, setLoading] = useState(false);
 
     const doLogin = async (submitBody) => {
         try {
@@ -58,8 +21,8 @@ export const AuthProvider = ({ children }) => {
                     withCredentials: true
                 }
             );
-            const accessToken = response?.data?.accessToken;
-            setAuth({ accessToken });
+            const newAuth = decodeToken(response?.data.accessToken);
+            setAuth(newAuth);
             return { success: true, status: 200 };
         }
         catch (err) {
@@ -113,6 +76,22 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    const getId = () => {
+        return auth?.user?.id || false;
+    }
+
+    const getUsername = () => {
+        return auth?.user?.username || "";
+    }
+
+    const getRoles = () => {
+        return auth?.user?.roles || [];
+    }
+
+    const getTwitchUserId = () => {
+        return auth?.user?.twitch_user_id || "";
+    }
+
     const doLogout = async () => {
         setAuth({});
         try {
@@ -126,16 +105,8 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-    if (loading) {
-        return (
-            <div className="loading-content">
-                LOADING CONTENT
-            </div>
-        );
-    }
-
     return (
-        <AuthContext.Provider value={{ auth, setAuth, loading, isAuth, id, username, roles, doLogin, doLogout, doRegister }}>
+        <AuthContext.Provider value={{ auth, setAuth, loading, doLogin, doLogout, doRegister, getId, getUsername, getRoles, getTwitchUserId }}>
             { children }
         </AuthContext.Provider>
     );

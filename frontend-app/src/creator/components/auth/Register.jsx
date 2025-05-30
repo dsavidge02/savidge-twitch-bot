@@ -3,9 +3,10 @@ import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
-import AuthForm from "./AuthForm";
 import { useAuthContext } from "../../contexts/AuthContext";
 import TwitchVerify from "./twitch/TwitchVerify";
+
+import CustomForm from "../structures/CustomForm/CustomForm";
 
 import './Register.css';
 
@@ -20,7 +21,7 @@ const Register = () => {
 
     useEffect(() => {
         const code = searchParams.get('code');
-        if (!code || (user?.email && user?.login)) {
+        if (!code || (user?.email && user?.login && user?.twitch_user_id)) {
             return;
         }
 
@@ -29,11 +30,12 @@ const Register = () => {
                 setLoading(true);
                 const res = await axiosPrivate.post("http://localhost:3001/auth/user/verify", { code });
                 if (res.status === 200) {
-                    const { email, login } = res.data;
-                    console.log(email, login)
+                    const { email, login, twitch_user_id } = res.data;
+                    console.log(email, login, twitch_user_id)
                     setUser({
                         email,
-                        login
+                        login,
+                        twitch_user_id
                     });
                     setLoading(false);
                     return;
@@ -50,7 +52,7 @@ const Register = () => {
                     return;
                 }
                 console.error("Good try bucko:", err);
-                navigate("/savidge_af");
+                navigate("/savidge_af/login");
                 return;
             }
         }
@@ -75,7 +77,8 @@ const Register = () => {
             valid: true,
             default: '',
             placeholder: 'Email',
-            readOnly: true
+            readOnly: true,
+            errorMessage: "Invalid email address."
         },
         username: {
             value: user.login,
@@ -83,7 +86,18 @@ const Register = () => {
             valid: true,
             default: '',
             placeholder: 'Username',
-            readOnly: true
+            readOnly: true,
+            errorMessage: "Invalid username."
+        },
+        twitch_user_id: {
+            value: user.twitch_user_id,
+            validator: (value, _) => /^[0-9]{6,12}$/.test(value),
+            valid: true,
+            default: '',
+            placeholder: 'twitch user id',
+            readOnly: true,
+            errorMessage: "Invalid twitch user id.",
+            hide: true
         },
         pwd: {
             value: '',
@@ -91,7 +105,8 @@ const Register = () => {
             valid: true,
             default: '',
             type: 'password',
-            placeholder: 'Password'
+            placeholder: 'Password',
+            errorMessage: 'Invalid password.'
         },
         confirmPwd: {
             value: '',
@@ -99,7 +114,8 @@ const Register = () => {
             valid: true,
             default: '',
             type: 'password',
-            placeholder: 'Confirm Password'
+            placeholder: 'Confirm Password',
+            errorMessage: 'Password does not match.'
         }
     };
 
@@ -107,7 +123,8 @@ const Register = () => {
         const submitBody = {
             email: state.email.value,
             username: state.username.value,
-            password: state.pwd.value
+            password: state.pwd.value,
+            twitch_user_id: state.twitch_user_id.value
         };
         console.log(submitBody);
         const response = await doRegister(submitBody);
@@ -130,14 +147,6 @@ const Register = () => {
         }
     }
 
-    const params = {
-        formName,
-        initialState,
-        formSubmit: handleRegister,
-        formNavigate: from,
-        formErrors: registerErrors
-    };
-
     return (
         <>
             {
@@ -151,7 +160,7 @@ const Register = () => {
                     {
                         user.email && user.login && (
                             <div className="register-form-container">
-                                <AuthForm params={params} />
+                                <CustomForm formName={"Register"} initialState={initialState} action={handleRegister} redirect={from} formErrors={registerErrors} />
                             </div>
                         )
                     }

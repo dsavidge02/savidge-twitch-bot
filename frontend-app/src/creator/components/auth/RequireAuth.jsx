@@ -2,12 +2,12 @@ import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useAuthContext } from "../../contexts/AuthContext";
 
 const RequireAuth = ({ allowedRoles }) => {
-    const { id, roles, loading } = useAuthContext();
+    const { getId, getRoles } = useAuthContext();
     const location = useLocation();
 
-    if (loading) {
-        return <di>Loading...</di>
-    }
+    const id = getId();
+    const roles = getRoles();
+
     return (
         roles.find(role => allowedRoles?.includes(role))
             ? <Outlet />
