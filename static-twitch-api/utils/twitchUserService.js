@@ -107,7 +107,7 @@ const verifyUser = async (data) => {
     const following = await checkFollowing(id);
     const subscription = await checkSubscription(id);
     const allowed = (following || subscription);
-    console.log(following);
+    console.log(`${login} is ${allowed ? "allowed" : "not allowed"} to make an account.`);
     const user = {
         allowed,
         login,
