@@ -25,7 +25,7 @@ const { errorHandler } = require('./middleware/errorHandler');
 const whitelist = ['https://savidgeapps.com', 'http://localhost:5173'];
 const corsOptions = {
     origin: (origin, callback) => {
-        if (process.env.ENVIRONMENT === 'DEV' && !origin) {
+        if (process.env.ENVIRONMENT === 'DEV') {
             callback(null, true);
         }
         else if (whitelist.includes(origin)) {
@@ -60,7 +60,7 @@ let server;
 
 mongoConnector.connect()
     .then(() => {
-        server = app.listen(PORT, () => {
+        server = app.listen(PORT, '0.0.0.0', () => {
             console.log(`Server is running on ${URL}:${PORT}`);
         });
     })

@@ -1,0 +1,35 @@
+.custom-value-display-container {
+    height: fit-content;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    align-items: center;
+
+    padding: .5em .5em;
+    border-radius: 10px;
+    border: 1px solid black;
+}
+
+.custom-value-label {
+    width: fit-content;
+    text-wrap: nowrap;
+    height: fit-content;
+}
+
+.custom-value-content {
+    display: flex;
+    align-items: center;
+}
+
+.custom-value-display {
+    font-family: monospace;
+    height: fit-content;
+    text-align: left;
+    padding: 0em 1em;
+}
+
+.custom-value-button-container {
+    width: fit-content;
+    height: fit-content;
+}

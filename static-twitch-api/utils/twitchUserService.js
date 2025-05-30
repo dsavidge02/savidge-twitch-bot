@@ -87,7 +87,8 @@ const verifyUser = async (data) => {
     const user = {
         following,
         login,
-        email
+        email,
+        id
     }
     return user;
 };

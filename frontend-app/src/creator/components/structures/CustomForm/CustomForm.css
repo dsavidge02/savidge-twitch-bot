@@ -1,0 +1,44 @@
+.custom-form-container {
+    background-color: #fff;
+    width: fit-content;
+    height: fit-content;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 1em;
+    border: 4px solid black;
+    border-radius: 10px;
+    box-sizing: border-box;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5), 0 15px 40px rgba(0, 0, 0, 0.10);
+}
+
+.custom-form-header {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+
+    font-size: 64px;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+.custom-form {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    gap: 10px;
+}
+
+.custom-form-submit-error-container {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+
+.custom-form-footer {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}

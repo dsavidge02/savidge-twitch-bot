@@ -1,0 +1,19 @@
+.custom-header-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+    padding: .5em 1em;
+    box-sizing: border-box;
+}
+
+.custom-header-spacer {
+    flex-grow: 1;
+}
+
+.custom-header-menu-links {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+

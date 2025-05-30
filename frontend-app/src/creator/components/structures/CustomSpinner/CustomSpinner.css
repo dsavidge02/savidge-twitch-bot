@@ -1,0 +1,21 @@
+.simple-custom-spinner {
+    position: absolute;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: 1.1s spin ease-in-out infinite;
+    opacity: 0;
+}
+
+.simple-custom-spinner.loading {
+    opacity: 1;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

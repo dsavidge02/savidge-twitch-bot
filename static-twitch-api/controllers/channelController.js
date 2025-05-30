@@ -7,14 +7,31 @@ const handleGetFollowers = async (req, res) => {
         if (!token) return res.sendStatus(400);
         const streamer = getStreamerId();
 
-        const response = await twitchRequest({
-            method: 'get',
-            url: 'https://api.twitch.tv/helix/channels/followers',
-            params: { 'broadcaster_id': streamer }
-        });
+        let followers = [];
+        let cursor = null;
+        const limit = 100;
+
+        do {
+            const response = await twitchRequest({
+                method: 'get',
+                url: 'https://api.twitch.tv/helix/channels/followers',
+                params: {
+                    'broadcaster_id': streamer,
+                    'first': limit,
+                    ...(cursor ? { 'after': cursor } : {})
+                }
+            });
+
+            if (response.data?.data?.length) {
+                followers.push(...response.data.data);
+            }
+
+            cursor = response.data.pagination?.cursor;
+        } while (cursor);
 
         res.json({
-            count: response.data.total
+            count: followers.length,
+            followers
         });
     }
     catch (err) {
@@ -29,14 +46,31 @@ const handleGetSubscribers = async (req, res) => {
         if (!token) return res.sendStatus(400);
         const streamer = getStreamerId();
 
-        const response = await twitchRequest({
-            method: 'get',
-            url: 'https://api.twitch.tv/helix/subscriptions',
-            params: { 'broadcaster_id': streamer }
-        });
+        let subscribers = [];
+        let cursor = null;
+        const limit = 100;
+
+        do {
+            const response = await twitchRequest({
+                method: 'get',
+                url: 'https://api.twitch.tv/helix/subscriptions',
+                params: {
+                    broadcaster_id: streamer,
+                    first: limit,
+                    ...(cursor ? { 'after': cursor } : {})
+                }
+            });
+
+            if (response.data?.data?.length) {
+                subscribers.push(...response.data.data);
+            }
+
+            cursor = response.data.pagination?.cursor;
+        } while (cursor);
 
         res.json({
-            count: response.data.total
+            count: subscribers.length,
+            subscribers
         });
     }
     catch (err) {
@@ -45,7 +79,67 @@ const handleGetSubscribers = async (req, res) => {
     }
 };
 
+const handleGetFollower = async (req, res) => {
+    try {
+        const token = getAccessToken();
+        if (!token) return res.sendStatus(400);
+        const streamer = getStreamerId();
+
+        const response = await twitchRequest({
+            method: 'get',
+            url: 'https://api.twitch.tv/helix/channels/followers',
+            params: {
+                broadcaster_id: streamer,
+                user_id: req.twitch_user_id
+            }
+        });
+
+        const follower = response.data.data[0];
+
+        console.log(`follower: ${JSON.stringify(follower)}`);
+
+        res.json({
+            follower
+        });
+    }
+    catch (err) {
+        console.error('Error fetching follower from Twitch:', err.message);
+        res.status(500).json({ error: 'Failed to fetch follower from Twitch API' });
+    }
+};
+
+const handleGetSubscriptions = async (req, res) => {
+    try {
+        const token = getAccessToken();
+        if (!token) return res.sendStatus(400);
+        const streamer = getStreamerId();
+
+        const response = await twitchRequest({
+            method: 'get',
+            url: 'https://api.twitch.tv/helix/subscriptions',
+            params: {
+                broadcaster_id: streamer,
+                user_id: req.twitch_user_id
+            }
+        });
+
+        const subscriptions = response.data.data;
+
+        console.log(`subscriptions: ${JSON.stringify(subscriptions)}`);
+
+        res.json({
+            subscriptions
+        });
+    }
+    catch (err) {
+        console.error('Error fetching subscriber from Twitch:', err.message);
+        res.status(500).json({ error: 'Failed to fetch subscriber from Twitch API' });
+    }
+};
+
 module.exports = {
     handleGetFollowers,
-    handleGetSubscribers
+    handleGetSubscribers,
+    handleGetFollower,
+    handleGetSubscriptions
 }

@@ -7,6 +7,7 @@ const clientSecret = process.env.TWITCH_CLIENT_SECRET;
 
 let accessToken = null;
 let refreshToken = null;
+let expiresAt = null;
 
 const requiredScopes = ['channel:read:subscriptions', 'moderator:read:followers'];
 
@@ -25,13 +26,14 @@ const setToken = (data) => {
 
     accessToken = access_token;
     refreshToken = refresh_token;
+    expiresAt = Date.now() + expires_in * 1000;
 
     console.log(`Access Token: ${accessToken}`);
     console.log(`Refresh Token: ${refreshToken}`);
 }
 
 const getAccessToken = () => {
-    return accessToken;
+    return { accessToken, refreshToken, expiresAt };
 }
 
 const refreshAccessToken = async () => {
