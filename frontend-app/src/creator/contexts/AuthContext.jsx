@@ -88,6 +88,10 @@ export const AuthProvider = ({ children }) => {
         return auth?.user?.roles || [];
     }
 
+    const getTwitchUserId = () => {
+        return auth?.user?.twitch_user_id || "";
+    }
+
     const doLogout = async () => {
         setAuth({});
         try {
@@ -102,7 +106,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ auth, setAuth, loading, doLogin, doLogout, doRegister, getId, getUsername, getRoles }}>
+        <AuthContext.Provider value={{ auth, setAuth, loading, doLogin, doLogout, doRegister, getId, getUsername, getRoles, getTwitchUserId }}>
             { children }
         </AuthContext.Provider>
     );

@@ -68,32 +68,25 @@ export const getSubscribers = async (axiosPrivate) => {
     }
 };
 
-export const checkFollowing = async (username, axiosPrivate) => {
+export const checkFollowing = async (axiosPrivate) => {
     try {
-        const followers = await getFollowers(axiosPrivate);
-        
-        if (followers.length === 0) return {};
-
-        const follower = followers.filter(f => {f.user_name === username});
-        
-        return follower;
+        const res = await axiosPrivate.get(`${baseURL}/channel/getFollower`);
+        if (!res.data?.follower) return {};
+        return res.data.follower;
     }
     catch (err) {
         return {};
     }
 };
 
-export const checkSubscribed = async (username, axiosPrivate) => {
+export const checkSubscriptions = async (axiosPrivate) => {
     try {
-        const subscribers = await getSubscribers(axiosPrivate);
-        
-        if (subscribers.length === 0) return {};
-
-        const subscriber = subscribers.filter(s => {s.user_name === username});
-        
-        return subscriber;
+        const res = await axiosPrivate.get(`${baseURL}/channel/getSubscriptions`);
+        console.log(res.data);
+        if (!res.data?.subscriptions) return [];
+        return res.data.subscriptions;
     }
     catch (err) {
-        return {};
+        return [];
     }
 };

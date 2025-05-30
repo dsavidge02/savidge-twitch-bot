@@ -74,7 +74,7 @@ const handleVerifyUser = async (req, res) => {
         const newToken = await fetchUserAccessToken(code, redirectUri);
         const user = await verifyUser(newToken);
 
-        if (user.following) {
+        if (user.allowed) {
             return res.status(200).json({ 
                 email: user.email,
                 login: user.login,

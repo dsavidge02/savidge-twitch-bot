@@ -17,12 +17,14 @@ const handleLogin = async (req, res) => {
     
     const pMatch = await bcrypt.compare(password, foundUser.password);
     if (pMatch) {
+        const twitch_user_id = foundUser.twitch_user_id || "";
         const accessToken = jwt.sign(
             {
                 "UserInfo": {
                     "_id": foundUser._id,
                     "username": foundUser.username,
-                    "roles": foundUser.roles
+                    "roles": foundUser.roles,
+                    "twitch_user_id": twitch_user_id
                 }
             },
             privateKey,

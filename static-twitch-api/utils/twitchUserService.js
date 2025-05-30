@@ -47,6 +47,28 @@ const checkFollowing = async (userId) => {
     }
 }
 
+const checkSubscription = async (userId) => {
+    try {
+        const streamer = getStreamerId();
+
+        const response = await twitchRequest({
+            method: 'get',
+            url: 'https://api.twitch.tv/helix/subscriptions',
+            params: {
+                broadcaster_id: streamer,
+                user_id: userId
+            }
+        });
+
+        const subscription = response?.data?.data?.length > 0;
+        return subscription;
+    }
+    catch (err) {
+        console.error('Error fetching subscriptions from Twitch:', err.message);
+        res.status(500).json({ error: 'Failed to fetch subscriptions from Twitch API' });
+    }
+};
+
 const verifyUser = async (data) => {
     const token = getAccessToken();
     if (!token) return false;
@@ -83,9 +105,11 @@ const verifyUser = async (data) => {
     console.log(id);
 
     const following = await checkFollowing(id);
+    const subscription = await checkSubscription(id);
+    const allowed = (following || subscription);
     console.log(following);
     const user = {
-        following,
+        allowed,
         login,
         email,
         id

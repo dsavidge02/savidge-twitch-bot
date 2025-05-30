@@ -11,7 +11,8 @@ export const decodeToken = (accessToken) => {
             user: {
                 id: user?._id || "",
                 username: user?.username || "",
-                roles: user?.roles || []
+                roles: user?.roles || [],
+                twitch_user_id: user?.twitch_user_id || ""
             }
         };
     }

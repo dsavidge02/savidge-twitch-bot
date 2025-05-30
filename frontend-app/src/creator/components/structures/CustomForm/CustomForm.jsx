@@ -40,9 +40,12 @@ const formReducer = (state, action) => {
     }
 }
 
-const CustomForm = ({ formName, initialState, action, redirect, nap }) => {
+const CustomForm = ({ formName, initialState, action, redirect, nap, formErrors }) => {
     const [formState, setFormState] = useReducer(formReducer, initialState);
-    const [submitError, setSubmitError] = useState(false);
+    const [submitError, setSubmitError] = useState({
+        status: false,
+        message: ""
+    });
     const [submitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
 
@@ -64,9 +67,20 @@ const CustomForm = ({ formName, initialState, action, redirect, nap }) => {
         return allValid;
     }
 
+    const updateSubmitError = (statusCode) => {
+        if (statusCode === -1) {
+            setSubmitError({ status: false, message: "" });
+            return;
+        }
+        else {
+            const submitErrMessage = formErrors[`${statusCode}`].message;
+            setSubmitError({ status: true, message: submitErrMessage});
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitError(false);
+        updateSubmitError(-1);
         if(validate()) {
             setSubmitting(true);
             try {
@@ -77,7 +91,8 @@ const CustomForm = ({ formName, initialState, action, redirect, nap }) => {
                     navigate(redirect, { replace: true });
                 }
                 else {
-                    setSubmitError(true);
+                    const statusCode = submitResponse.status;
+                    updateSubmitError(statusCode);
                     console.log('Error with submit');
                 }
             }
@@ -93,7 +108,7 @@ const CustomForm = ({ formName, initialState, action, redirect, nap }) => {
                 <span>{ `${formName}` }</span>
             </div>
             <div className="custom-form-submit-error-container">
-                <CustomErrorMessage status={submitError} text={"Form Error"} size={"16px"}/>
+                <CustomErrorMessage status={submitError.status} text={submitError.message} size={"16px"}/>
             </div>
             <div className="custom-form">
                 {Object.keys(formState).map((fieldName) => {

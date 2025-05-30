@@ -56,17 +56,9 @@ const Login = () => {
         }
     }
 
-    const params = {
-        formName,
-        initialState,
-        formSubmit: handleLogin,
-        formNavigate: from,
-        formErrors: loginErrors
-    };
-
     return (
         <div className="login-form-container">
-            <CustomForm formName={"Login"} initialState={initialState} action={handleLogin} redirect={from} nap={1}/>
+            <CustomForm formName={"Login"} initialState={initialState} action={handleLogin} redirect={from} nap={0} formErrors={loginErrors}/>
         </div>
     );
 };

@@ -9,7 +9,20 @@ let accessToken = null;
 let refreshToken = null;
 let expiresAt = null;
 
+
+let isRefreshing = false;
+let requestQueue = [];
+
 const requiredScopes = ['channel:read:subscriptions', 'moderator:read:followers'];
+
+const fakeAxios401 = {
+    response: {
+        status: 401,
+        data: 'Simulated token expiration'
+    },
+    message: 'Simulated 401 unauthorized',
+    isAxiosError: true
+};
 
 const setToken = (data) => {
     const { access_token, refresh_token, expires_in, scope, token_type } = data;
@@ -37,64 +50,76 @@ const getAccessToken = () => {
 }
 
 const refreshAccessToken = async () => {
-    try {
-        const body = qs.stringify({
-            client_id: clientId,
-            client_secret: clientSecret,
-            grant_type: 'refresh_token',
-            refresh_token: encodeURIComponent(refreshToken)
-        });
+    if (!refreshToken) return;
+    const body = qs.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'refresh_token',
+        refresh_token: encodeURIComponent(refreshToken)
+    });
 
-        const response = await axios.post('https://id.twitch.tv/oauth2/token', body, {
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        });
+    const response = await axios.post('https://id.twitch.tv/oauth2/token', body, {
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    });
 
-        const result = response.data;
-        return result;
-    }
-    catch (err) {
-        throw err;
-    }
+    return response.data;
 };
 
 const twitchRequest = async(config) => {
-    try {
-        const response = await axios({
-            ...config,
-            headers: {
-                ...config.headers,
-                'Authorization': `Bearer ${accessToken}`,
-                'Client-ID': clientId
-            }
-        });
+    const makeRequest = async (token) => axios({
+        ...config,
+        headers: {
+            ...config.headers,
+            'Authorization': `Bearer ${token}`,
+            'Client-ID': clientId
+        }
+    });
 
-        return response;
+    try {
+        if (!accessToken) throw Error("No access token exists for savidge_af.");
+        return await makeRequest(accessToken);
     }
     catch (err) {
-        if (err.response?.status === 401) {
-            console.warn('Access token expired. Refreshing...');
+        if (err.response?.status !== 401) {
+            throw err;
         }
+        console.warn('Access token expired. Refreshing...');
+
+        if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+                requestQueue.push(async (newToken) => {
+                    try {
+                        const res = await makeRequest(newToken);
+                        resolve(res);
+                    }
+                    catch (queueErr) {
+                        reject(queueErr);
+                    }
+                });
+            });
+        }
+
+        isRefreshing = true;
 
         try {
-            const newToken = await refreshAccessToken();
-            setToken(newToken);
+            const newTokenData = await refreshAccessToken();
+            setToken(newTokenData);
 
-            const retryResponse = await axios({
-                ...config,
-                headers: {
-                    ...config.headers,
-                    'Authorization': `Bearer ${token}`,
-                    'Client-ID': clientId
-                }
-            });
+            const retryRes = await makeRequest(accessToken);
 
-            return retryResponse;
+            requestQueue.forEach((callback) => callback(accessToken));
+            requestQueue = [];
+
+            return retryRes;
         }
         catch (refreshErr) {
-            console.error('Failed to refresh token or retry request:', refreshErr.message);
+            requestQueue = [];
             throw refreshErr;
+        }
+        finally {
+            isRefreshing = false;
         }
     }
 }

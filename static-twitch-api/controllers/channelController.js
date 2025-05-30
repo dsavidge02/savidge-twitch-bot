@@ -3,8 +3,6 @@ const { getStreamerId } = require('../utils/twitchAuthService')
 
 const handleGetFollowers = async (req, res) => {
     try {
-        const token = getAccessToken();
-        if (!token) return res.sendStatus(400);
         const streamer = getStreamerId();
 
         let followers = [];
@@ -42,8 +40,6 @@ const handleGetFollowers = async (req, res) => {
 
 const handleGetSubscribers = async (req, res) => {
     try {
-        const token = getAccessToken();
-        if (!token) return res.sendStatus(400);
         const streamer = getStreamerId();
 
         let subscribers = [];
@@ -81,9 +77,9 @@ const handleGetSubscribers = async (req, res) => {
 
 const handleGetFollower = async (req, res) => {
     try {
-        const token = getAccessToken();
-        if (!token) return res.sendStatus(400);
         const streamer = getStreamerId();
+
+        if (!req?.twitch_user_id) return res.sendStatus(400);
 
         const response = await twitchRequest({
             method: 'get',
@@ -110,9 +106,9 @@ const handleGetFollower = async (req, res) => {
 
 const handleGetSubscriptions = async (req, res) => {
     try {
-        const token = getAccessToken();
-        if (!token) return res.sendStatus(400);
         const streamer = getStreamerId();
+
+        if (!req?.twitch_user_id) return res.sendStatus(400);
 
         const response = await twitchRequest({
             method: 'get',

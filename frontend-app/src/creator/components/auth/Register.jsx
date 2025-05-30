@@ -147,14 +147,6 @@ const Register = () => {
         }
     }
 
-    const params = {
-        formName,
-        initialState,
-        formSubmit: handleRegister,
-        formNavigate: from,
-        formErrors: registerErrors
-    };
-
     return (
         <>
             {
@@ -168,7 +160,7 @@ const Register = () => {
                     {
                         user.email && user.login && (
                             <div className="register-form-container">
-                                <CustomForm formName={"Register"} initialState={initialState} action={handleRegister} redirect={from} />
+                                <CustomForm formName={"Register"} initialState={initialState} action={handleRegister} redirect={from} formErrors={registerErrors} />
                             </div>
                         )
                     }
