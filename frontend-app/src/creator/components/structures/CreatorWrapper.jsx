@@ -15,47 +15,47 @@ const CreatorWrapper = () => {
         {
             linkName: "Savidge Apps",
             image: mindMeleeLogo,
-            redirect: "/savidge_af",
+            redirect: "/",
             roles: []
         },
         {
             linkName: "Followers",
             image: null,
-            redirect: "/savidge_af/followers",
+            redirect: "/followers",
         },
         {
             linkName: "Subscribers",
             image: null,
-            redirect: "/savidge_af/subscribers",
+            redirect: "/subscribers",
         },
         {
             linkName: "Login",
             image: null,
-            redirect: "/savidge_af/login",
+            redirect: "/login",
             roles: []
         },
         {
             linkName: "Register",
             image: null,
-            redirect: "/savidge_af/register",
+            redirect: "/register",
             roles: []
         },
         {
             linkName: "Admin",
             image: null,
-            redirect: "/savidge_af/admin",
+            redirect: "/admin",
             roles: [2002],
         },
         {
             linkName: "Profile",
             image: null,
-            redirect: "/savidge_af/profile",
+            redirect: "/profile",
             roles: [1992],
         },
         {
             linkName: "Logout",
             image: null,
-            redirect: "/savidge_af/login",
+            redirect: "/login",
             roles: [1992],
             action: doLogout
         },

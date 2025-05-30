@@ -9,7 +9,7 @@ const LOGIN_URL = '/login';
 
 const Login = () => {
     const location = useLocation();
-    const from = location.state?.from?.pathname || "/savidge_af";
+    const from = location.state?.from?.pathname || "/";
 
     const { doLogin } = useAuthContext();
 

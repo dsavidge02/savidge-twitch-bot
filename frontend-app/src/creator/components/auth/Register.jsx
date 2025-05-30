@@ -52,7 +52,7 @@ const Register = () => {
                     return;
                 }
                 console.error("Good try bucko:", err);
-                navigate("/savidge_af/login");
+                navigate("/login");
                 return;
             }
         }
@@ -64,7 +64,7 @@ const Register = () => {
     }, []);
 
     const location = useLocation();
-    const from = location.state?.from?.pathname || "/savidge_af/login";
+    const from = location.state?.from?.pathname || "/login";
 
     const { doRegister } = useAuthContext();
 
@@ -138,7 +138,7 @@ const Register = () => {
         409: {
             message: "User already exists",
             navigate: {
-                url: "/savidge_af/login",
+                url: "/login",
                 text: "Go to login"
             }
         },

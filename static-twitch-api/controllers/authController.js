@@ -4,7 +4,6 @@ const qs = require('qs');
 require('dotenv').config();
 const clientId = process.env.TWITCH_CLIENT_ID;
 const clientSecret = process.env.TWITCH_CLIENT_SECRET;
-// const redirectUri = "http://localhost:5173/savidge_af/callback";
 
 const { setToken, getAccessToken } = require('../utils/twitchAdminService');
 const { verifyUser } = require('../utils/twitchUserService');
@@ -48,7 +47,7 @@ const handleGenerateToken = async (req, res) => {
     if (!code) return res.status(400).json({ error: 'Authorization code is required.' });
 
     try {
-        const redirectUri = "http://localhost:5173/savidge_af/admin";
+        const redirectUri = "http://localhost:5173/admin";
         const newToken = await fetchUserAccessToken(code, redirectUri);
         setToken(newToken);
         const { access_token, refresh_token, expires_in } = newToken;
@@ -70,7 +69,7 @@ const handleVerifyUser = async (req, res) => {
     if (!code) return res.status(400).json({ error: 'Authorization code is required.' });
 
     try {
-        const redirectUri = "http://localhost:5173/savidge_af/register";
+        const redirectUri = "http://localhost:5173/register";
         const newToken = await fetchUserAccessToken(code, redirectUri);
         const user = await verifyUser(newToken);
 

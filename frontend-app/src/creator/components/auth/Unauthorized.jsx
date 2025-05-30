@@ -4,7 +4,7 @@ const Unauthorized = () => {
     return (
         <div className="unathorized-content">
             <h2>You don't have permission to view this page.</h2>
-            <Link to="/savidge_af" className="creator-link">Home</Link>
+            <Link to="/" className="creator-link">Home</Link>
         </div>
     )
 };

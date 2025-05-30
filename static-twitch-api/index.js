@@ -34,18 +34,8 @@ const url = process.env.ENVIRONMENT === 'DEV' ? 'http://localhost' : process.env
 const { fetchAccessToken } = require('./utils/twitchAuthService');
 fetchAccessToken();
 
-
-
 // LOADING IN CUSTOM ROUTES
-const userRouter = require('./routes/user');
-app.use('/user', userRouter);
-
-const channelRouter = require('./routes/channel');
-app.use('/channel', channelRouter);
-
-const accessTokenRouter = require('./routes/getUserToken');
-app.use('/accessToken', accessTokenRouter);
-
+app.use('/channel', require('./routes/channel'));
 app.use('/auth', require('./routes/auth'));
 
 // READING IN AND USING index.html
@@ -56,6 +46,6 @@ app.get('/', (req, res) => {
     res.sendFile(apiHomePage);
 });
 
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, () => {
     console.log(`Server is running on ${url}:${port}`);
 });
