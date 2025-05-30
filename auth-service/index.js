@@ -60,7 +60,7 @@ let server;
 
 mongoConnector.connect()
     .then(() => {
-        server = app.listen(PORT, '0.0.0.0', () => {
+        server = app.listen(PORT, () => {
             console.log(`Server is running on ${URL}:${PORT}`);
         });
     })

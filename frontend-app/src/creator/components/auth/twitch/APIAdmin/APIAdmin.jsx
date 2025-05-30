@@ -87,7 +87,7 @@ const APIAdmin =  () => {
             response_type: "code",
             client_id: "oq27qs5xtr75kpnrwyp3xixylz1crt",
             force_verify: true,
-            redirect_uri: "http://localhost:5173/admin",
+            redirect_uri: "http://localhost/admin",
             scope: "moderator:read:followers channel:read:subscriptions",
             state: admin_oauth_state
         });
