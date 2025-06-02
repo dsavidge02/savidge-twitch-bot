@@ -84,7 +84,7 @@ const Register = () => {
             response_type: "code",
             client_id: "oq27qs5xtr75kpnrwyp3xixylz1crt",
             force_verify: true,
-            redirect_uri: "http://localhost:5173/register",
+            redirect_uri: "http://localhost:8080/register",
             scope: "user:read:subscriptions user:read:email",
             state: user_oauth_state
         });

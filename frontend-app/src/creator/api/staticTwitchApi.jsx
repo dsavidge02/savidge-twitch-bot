@@ -1,4 +1,4 @@
-const baseURL = "/staticTwitchApi";
+const baseURL = "http://localhost:8080/staticTwitchApi";
 
 export const getToken = async (axiosPrivate) => {
     try {

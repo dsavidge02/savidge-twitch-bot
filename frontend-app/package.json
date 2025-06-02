@@ -6,7 +6,8 @@
     "scripts": {
         "dev": "vite",
         "host": "vite --host",
-        "build": "vite build"
+        "build": "vite build",
+        "preview": "vite preview"
     },
     "dependencies": {
         "@types/react": "^19.1.3",

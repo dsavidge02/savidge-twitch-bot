@@ -1,49 +1,33 @@
 services:
   frontend:
     build:
-      context: ./basic-frontend-app
+      context: ./frontend-app
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - "8080:8080"
     depends_on:
-      - backend
-  
-  twitchAPI:
-    build:
-      context: ./basic-twitch-api
-      dockerfile: Dockerfile
-    environment:
-      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
-      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
-      - TWITCH_STREAMER_USERNAME=${TWITCH_STREAMER_USERNAME}
-      - PORT=${TWITCH_API_PORT}
-      - URL=${HOST_URL}
-    ports:
-      - "3000:3000"
+      - authservice
+      - statictwitchapi
 
-  mongoAPI:
-    build:
-      context: ./basic-mongo-api
-      dockerfile: Dockerfile
-    environment:
-      - MONGO_DB_USERNAME=${MONGO_DB_USERNAME}
-      - MONGO_DB_PASSWORD=${MONGO_DB_PASSWORD}
-      - PORT=${MONGO_API_PORT}
-      - URL=${HOST_URL}
-    ports:
-      - "3001:3001"
-  
-  authService:
+  authservice:
     build:
       context: ./auth-service
       dockerfile: Dockerfile
     environment:
       - MONGO_DB_USERNAME=${MONGO_DB_USERNAME}
       - MONGO_DB_PASSWORD=${MONGO_DB_PASSWORD}
-      - PORT=${AUTH_SERVICE_PORT}
+    ports:
+      - "4000:4000"
+  
+  statictwitchapi:
+    build:
+      context: ./static-twitch-api
+      dockerfile: Dockerfile
+    environment:
+      - TWITCH_CLIENT_ID=${TWITCH_CLIENT_ID}
+      - TWITCH_CLIENT_SECRET=${TWITCH_CLIENT_SECRET}
+      - TWITCH_STREAMER_USERNAME=${TWITCH_STREAMER_USERNAME}
+      - PORT=${STATIC_TWITCH_API_PORT}
       - URL=${HOST_URL}
     ports:
-      - "3002:3002"
+      - "3001:3001"

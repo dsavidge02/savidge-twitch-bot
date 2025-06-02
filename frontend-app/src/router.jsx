@@ -10,9 +10,9 @@ function Router() {
         <AuthProvider>
             <BrowserRouter>
                 <ViewProvider>
-                        <Routes>
-                            <Route path="/*" element={<App />} />
-                        </Routes>
+                    <Routes>
+                        <Route path="/*" element={<App />} />
+                    </Routes>
                 </ViewProvider>
             </BrowserRouter>
         </AuthProvider>
