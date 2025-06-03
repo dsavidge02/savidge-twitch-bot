@@ -15,6 +15,8 @@ let requestQueue = [];
 
 const requiredScopes = ['channel:read:subscriptions', 'moderator:read:followers'];
 
+const twitchEventSocket = require("../sockets/twitchEventSocket2");
+
 const fakeAxios401 = {
     response: {
         status: 401,
@@ -24,7 +26,7 @@ const fakeAxios401 = {
     isAxiosError: true
 };
 
-const setToken = (data) => {
+const setToken = async (data) => {
     const { access_token, refresh_token, expires_in, scope, token_type } = data;
 
     const scopeArray = Array.isArray(scope) ? scope : typeof scope === 'string' ? scope.split(' ') : [];
@@ -43,6 +45,9 @@ const setToken = (data) => {
 
     console.log(`Access Token: ${accessToken}`);
     console.log(`Refresh Token: ${refreshToken}`);
+
+    await twitchEventSocket.updateAccessToken(accessToken);
+    await twitchEventSocket.start();
 }
 
 const getAccessToken = () => {
@@ -105,7 +110,7 @@ const twitchRequest = async(config) => {
 
         try {
             const newTokenData = await refreshAccessToken();
-            setToken(newTokenData);
+            await setToken(newTokenData);
 
             const retryRes = await makeRequest(accessToken);
 

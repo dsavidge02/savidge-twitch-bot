@@ -49,7 +49,7 @@ const handleGenerateToken = async (req, res) => {
     try {
         const redirectUri = "http://localhost:5173/admin";
         const newToken = await fetchUserAccessToken(code, redirectUri);
-        setToken(newToken);
+        await setToken(newToken);
         const { access_token, refresh_token, expires_in } = newToken;
         return res.json({
             access_token,

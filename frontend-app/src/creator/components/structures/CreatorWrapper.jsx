@@ -19,6 +19,11 @@ const CreatorWrapper = () => {
             roles: []
         },
         {
+            linkName: "Display",
+            image: null,
+            redirect: "/display",
+        },
+        {
             linkName: "Followers",
             image: null,
             redirect: "/followers",

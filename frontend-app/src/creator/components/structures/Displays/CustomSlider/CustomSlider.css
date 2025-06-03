@@ -1,0 +1,9 @@
+.custom-slider-container {
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-slider-inner-container {
+    background-color: black;
+}

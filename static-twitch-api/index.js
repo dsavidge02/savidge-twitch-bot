@@ -1,4 +1,5 @@
 const express = require('express');
+const http = require('http')
 const app = express().disable('X-Powered-By');
 const cors = require('cors');
 
@@ -46,6 +47,11 @@ app.get('/', (req, res) => {
     res.sendFile(apiHomePage);
 });
 
-app.listen(port, () => {
+const server = http.createServer(app);
+
+const { createSocket } = require('./sockets/eventSocket');
+createSocket(server);
+
+server.listen(port, () => {
     console.log(`Server is running on ${url}:${port}`);
 });
