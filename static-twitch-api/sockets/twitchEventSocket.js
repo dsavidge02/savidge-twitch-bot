@@ -67,10 +67,10 @@ class TwitchEventSocket {
 
         this.ws = new WebSocket("wss://eventsub.wss.twitch.tv/ws");
 
-        this.ws.on("open", () => console.log("WebSocket connection opened."));
+        this.ws.on("open", () => console.log("Twitch WebSocket connection opened."));
         this.ws.on("message", async (data) => await this.handleEventMessage(data));
-        this.ws.on("close", () => console.warn("WebSocket connection closed."));
-        this.ws.on("error", (err) => console.log("WebSocket error:", err));
+        this.ws.on("close", () => console.warn("Twitch WebSocket connection closed."));
+        this.ws.on("error", (err) => console.log("Twitch WebSocket error:", err));
 
         return true;
     }

@@ -5,7 +5,7 @@ import './CreatorWrapper.css';
 
 import CustomHeader from './CustomHeader/CustomHeader';
 import CustomFooter from './CustomFooter/CustomFooter';
-import mindMeleeLogo from "../../../assets/images/mind_melee_logo_transparent.png";
+import savidgeAppsLogo from "../../../assets/images/savidge-apps-logo-circular-bw-1.0.1.png";
 import { useAuthContext } from '../../contexts/AuthContext';
 
 const CreatorWrapper = () => {
@@ -15,7 +15,7 @@ const CreatorWrapper = () => {
     const allLinks = [
         {
             linkName: "Savidge Apps",
-            image: mindMeleeLogo,
+            image: savidgeAppsLogo,
             redirect: "/",
             roles: []
         },
