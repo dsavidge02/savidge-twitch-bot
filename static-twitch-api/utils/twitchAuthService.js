@@ -17,7 +17,7 @@ let streamerId = null;
 
 const MAX_TIMEOUT = 2 ** 31 - 1;
 
-const twitchEventSocket = require("../sockets/twitchEventSocket2");
+const twitchEventSocket = require("../sockets/twitchEventSocket");
 
 // TOKEN LOGIC
 const fetchAccessToken = async() => {

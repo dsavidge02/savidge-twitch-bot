@@ -1,149 +1,278 @@
-const axios = require('axios');
 const WebSocket = require("ws");
-const { getStreamerId } = require("../utils/twitchAuthService");
-require('dotenv').config();
+const axios = require("axios");
 
-const clientId = process.env.TWITCH_CLIENT_ID;
+const clientID = process.env.TWITCH_CLIENT_ID;
 
-let ws = null;
-let sessionId = null;
-let keepAliveTimeout = null;
-let msgIds = [];
-const KEEPALIVE_BUFFER = 10 * 1000;
+const { emitFollowerUpdate, emitSubscriberUpdate } = require("./eventSocket");
 
-let accessToken = null;
+class TwitchEventSocket {
+    constructor() {
+        this.clientID = clientID;
+        this.streamerID = "";
+        this.accessToken = "";
+        this.sessionID = "";
+        this.msgQueue = new Set();
+        this.started = false;
 
-const startTwitchEventSocket = async (access_token) => {
-    accessToken = access_token;
-    console.log(`access token: ${accessToken}`);
-    console.log("Connecting to Twitch EventSub Websocket.");
+        this.handlers = {
+            "channel.follow"    : (e) => { console.log(`[follow] ${e.user_name}`); emitFollowerUpdate(e); },
+            "channel.subscribe" : (e) => { console.log(`[sub] ${e.user_name}`); emitSubscriberUpdate(e); },
+        };
 
-    ws = new WebSocket("wss://eventsub.wss.twitch.tv/ws");
-
-    ws.on("open", () => {
-        console.log("WebSocket connection opened.");
-    });
-
-    ws.on("message", async (data) => {
-        await handleTwitchEventMessage(data);
-    });
-
-    ws.on("close", () => {
-        console.warn("Websocket closed. Reconnect in 5s...");
-        clearTimeout(keepAliveTimeout);
-        setTimeout(startTwitchEventSocket, 5000);
-    });
-
-    ws.on("error", (err) => {
-        console.error("Websocket error:", err);
-    });
-};
-
-const scheduleKeepAlive = (timeoutSeconds) => {
-    if (keepAliveTimeout) clearTimeout(keepAliveTimeout);
-    keepAliveTimeout = setTimeout(() => {
-        console.warn("Missed keepalive! Reconnecting...");
-        startTwitchEventSocket();
-    }, (timeoutSeconds || 60) * 1000 + KEEPALIVE_BUFFER);
-};
-
-const handleTwitchEventMessage = async (data) => {
-    const msg = JSON.parse(data);
-    const msgId = msg.metadata?.message_id;
-    if (msgIds.includes(msgId)) {
-        console.warn("Ignoring message with duplicate message id:", )
-    }
-    else {
-        msgIds.push(msgId);
-        if (msgIds.length > 100) msgIds.shift();
-    }
-    const type = msg.metadata?.message_type;
-    const payload = msg.payload;
-
-    switch (type) {
-        case "session_welcome":
-            sessionId = payload.session.id;
-            console.log("Session id received:", sessionId);
-            scheduleKeepAlive(payload.session.keepalive_timeout_seconds);
-            await subscribeToEvents();
-            break;
-
-        case "session_keepalive":
-            console.log("Keepalive received.");
-            scheduleKeepAlive(payload.session?.keepalive_timeout_seconds);
-            break;
-
-        case "notification":
-            handleNotification(payload);
-            break;
-
-        case "session_reconnect":
-            console.log("Recconect requested to URL:", payload.session.reconnect_url);
-            reconnectToUrl(payload.session.reconnect_url);
-            break;
-        
-        case "revocation":
-            console.warn("Subscription revoked:", payload.subscription);
-            break;
-        
-        case "session_closed":
-            console.warn("Session closed. Attempting to reconnect...");
-            startTwitchEventSocket();
-            break;
-        
-        default:
-            console.log("Unknown message type:", type);
-    }
-};
-
-const subscribeToEvents = async () => {
-    const broadcasterId = getStreamerId();
-
-    const subscriptions = [
-        {
-            type: "channel.follow",
-            version: "2",
-            condition: {
-                broadcaster_user_id: broadcasterId,
-                moderator_user_id: broadcasterId
+        this.subscriptions = [
+            {
+                id: "",
+                status: "disabled",
+                type: "channel.follow",
+                version: "2",
+                condition: {
+                    broadcaster_user_id: "$streamerID",
+                    moderator_user_id: "$streamerID"
+                },
+            },
+            {
+                id: "",
+                status: "disabled",
+                type: "channel.subscribe",
+                version: "1",
+                condition: {
+                    broadcaster_user_id: "$streamerID"
+                },
             }
-        },
-        {
-            type: "channel.subscribe",
-            version: "1",
-            condition: {
-                broadcaster_user_id: broadcasterId
+        ];
+    }
+
+    setCondition() {
+        for (const spec of this.subscriptions) {
+            const c = spec.condition;
+            if (c.broadcaster_user_id === "$streamerID") c.broadcaster_user_id =  this.streamerID;
+            if (c.moderator_user_id === "$streamerID") c.moderator_user_id =  this.streamerID;
+        }
+    }
+
+    setStreamerID(id) { this.streamerID = id; }
+    async updateAccessToken(token) { this.accessToken = token; await this.stop(); }
+
+    async start() {
+        if (!this.streamerID || this.streamerID === "") { console.warn("Streamer ID not found."); return false; }
+        if (this.started) { console.warn("Socket already started."); return false; }
+        if (!this.accessToken) { console.warn("No access token."); return false; }
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            console.warn("WebSocket already open."); return false;
+        }
+
+        this.setCondition();
+
+        this.started = true;
+
+        this.ws = new WebSocket("wss://eventsub.wss.twitch.tv/ws");
+
+        this.ws.on("open", () => console.log("WebSocket connection opened."));
+        this.ws.on("message", async (data) => await this.handleEventMessage(data));
+        this.ws.on("close", () => console.warn("WebSocket connection closed."));
+        this.ws.on("error", (err) => console.log("WebSocket error:", err));
+
+        return true;
+    }
+
+    async stop() {
+        if (!this.started) return;
+
+        await this.unsubscribeAll();
+
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.close(1000, "client shutdown");
+        }
+
+        this.started = false;
+        this.sessionID = ""
+        this.msgQueue.clear();
+        console.log("Twitch Event Socket stopped.");
+    }
+
+    async reconnect(reconnectUrl) {
+        if (!reconnectUrl) {
+            console.warn("No reconnect URL found.");
+            return;
+        }
+        if (!this.started) {
+            console.warn("Socket not yet started, cannot reconnect.");
+            return;
+        }
+
+        console.log("Starting to reconnect to:", reconnectUrl);
+        const oldWs= this.ws;
+
+        const newWs = new WebSocket(reconnectUrl);
+
+        newWs.on("open", () => console.log("Re-connect: socket opened."));
+        newWs.on("message", async (data) => {
+            const type = await this.handleEventMessage(data);
+            if (type === "session_welcome") {
+                console.log("Re-connect: welcome received, closing old WebSocket.");
+
+                if (oldWs && oldWs.readyState === WebSocket.OPEN) {
+                    oldWs.close(1000, "reconnected");
+                }
+
+                this.ws = newWs;
+            }
+        });
+        newWs.on("close", () => console.warn("Re-connect: socket closed."));
+        newWs.on("error", (err) => console.warn("Re-connect: socket error:", err));
+    }
+
+    async handleEventMessage(data) {
+        let msg;
+        try { msg = JSON.parse(data); }
+        catch (e) { console.error("Bad JSON received from notification."); return ""; }
+
+        const id = msg.metadata?.message_id;
+        const type = msg.metadata?.message_type;
+
+        if (!id || this.msgQueue.has(id)) return "";
+        this.msgQueue.add(id);
+        if (this.msgQueue.size > 100) {
+            const first = this.msgQueue.values().next().value;
+            this.msgQueue.delete(first);
+        }
+
+        switch (type) {
+            case "session_welcome":
+                this.sessionID = msg.payload?.session?.id ?? "";
+                if (!this.sessionID) { console.warn("No session ID!"); return ""; }
+                console.log("Session:", this.sessionID);
+                await this.subscribeToEvents();
+                return "session_welcome";
+
+            case "session_keepalive":
+                return "session_keepalive";
+
+            case "session_reconnect":
+                const url = msg.payload?.session?.reconnect_url;
+                console.warn("Session reconnecting.");
+                this.reconnect(url);
+                return "session_reconnect";
+
+            case "revocation":
+                const revokeID = msg.payload?.subscription?.id;
+                console.log("Revocation received.");
+                await this.unsubscribe(revokeID);
+                return "revocation";
+
+            case "notification":
+                console.log("Notification received.");
+                await this.handleNotification(msg.payload);
+                return "notification";
+
+            default:
+                console.log("Unknown message type:", type);
+                return "";
+        }
+    }
+
+    async subscribeToEvents() {
+        for (const spec of this.subscriptions) {
+            try {
+                const { data } = await axios.post(
+                    "https://api.twitch.tv/helix/eventsub/subscriptions",
+                    {
+                        type: spec.type,
+                        version: spec.version,
+                        condition: spec.condition,
+                        transport: {
+                            method: "websocket",
+                            session_id: this.sessionID
+                        }
+                    },
+                    {
+                        headers: {
+                            "Client-ID": this.clientID,
+                            "Authorization": `Bearer ${this.accessToken}`,
+                            "Content-Type": "application/json",
+                        }
+                    }
+                );
+
+                const sub = data?.data?.[0];
+                if (sub?.id && sub.status === "enabled") {
+                    spec.id = sub.id;
+                    spec.status = sub.status;
+                    console.log(`Subscribed to ${spec.type} (${sub.id})`);
+                }
+                else {
+                    console.error(`Bad sub response for ${spec.type}`);
+                }
+            }
+            catch (err) {
+                console.error(`Sub ${spec.type} failed:`, err.response?.data || err.message);
             }
         }
-    ];
+    }
 
-    for (const sub of subscriptions) {
+    async unsubscribe(id) {
+        const spec = this.subscriptions.find(s => s.id === id);
+
+        if (!spec) {
+            console.warn(`No subscription with ID ${id} found.`);
+            return false;
+        }
+
         try {
-            await axios.post(
+            const res = await axios.delete(
                 "https://api.twitch.tv/helix/eventsub/subscriptions",
                 {
-                    ...sub,
-                    transport: {
-                        method: "websocket",
-                        session_id: sessionId,
-                    }
-                },
-                {
+                    params: { id },
                     headers: {
-                        "Client-ID": clientId,
-                        "Authorization": `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
+                        "Client-ID": this.clientID,
+                        "Authorization": `Bearer ${this.accessToken}`,
+                    }
                 }
             );
-            console.log(`Subscribed to ${sub.type}`);
+
+            if (res.status === 204) {
+                spec.id = "";
+                spec.status = "disabled";
+                console.log(`Unsubscribed from ${spec.type}`);
+                return true;
+            }
+            else {
+                console.warn(`Unexpected status code while unsubscribing: ${res.status}`);
+                return false;
+            }
         }
         catch (err) {
-            console.error(`Failed to subscribe to ${sub.type}:`, err.response?.data || err.message);
+            console.error(`Failed to unsubscribe from ${spec.type}:`, err.response?.data || err.message);
+            return false;
         }
     }
-};
 
-module.exports = {
-    startTwitchEventSocket
-};
+    async unsubscribeAll() {
+        const activeSubs = this.subscriptions.filter(s => s.id);
+        for (const sub of activeSubs) {
+            await this.unsubscribe(sub.id);
+        }
+    }
+
+    async handleNotification(payload) {
+        if (!payload?.event || !payload.subscription?.type) {
+            console.warn("Received incomplete notification message.");
+            return;
+        }
+        const type = payload.subscription.type;
+        const handler = this.handlers[type];
+        if (!handler) {
+            console.warn("No handler for event type:", type);
+            return;
+        }
+        try {
+            await handler(payload.event);
+        }
+        catch (err) {
+            console.error(`Handler for ${type} threw:`, err);
+        }
+    }
+}
+
+const instance = new TwitchEventSocket();
+module.exports = instance;

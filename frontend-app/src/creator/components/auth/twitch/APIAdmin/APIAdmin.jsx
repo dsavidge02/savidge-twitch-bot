@@ -49,7 +49,6 @@ const APIAdmin =  () => {
             setIsExchanging(true);
             try {
                 const success = await generateToken(axiosPrivate, code);
-                console.log("Token exchange successful:", success);
                 setSearchParams({});
             }
             catch (err) {

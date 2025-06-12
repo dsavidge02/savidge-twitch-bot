@@ -15,7 +15,7 @@ let requestQueue = [];
 
 const requiredScopes = ['channel:read:subscriptions', 'moderator:read:followers'];
 
-const twitchEventSocket = require("../sockets/twitchEventSocket2");
+const twitchEventSocket = require("../sockets/twitchEventSocket");
 
 const fakeAxios401 = {
     response: {
