@@ -1,0 +1,5 @@
+.subscribers-display-container {
+    display: flex;
+    height: fit-content;
+    width: fit-content;
+}

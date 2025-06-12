@@ -39,7 +39,11 @@
 }
 
 .creator-wrapper-content-border.aoe2 {
-    background-color: brown;
+    background-color: #deb887;
+}
+
+.creator-wrapper-content.aoe2 {
+    background-color: #faebd7;
 }
 
 .creator-wrapper-footer {

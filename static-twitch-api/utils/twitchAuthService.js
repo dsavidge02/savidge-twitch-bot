@@ -17,6 +17,8 @@ let streamerId = null;
 
 const MAX_TIMEOUT = 2 ** 31 - 1;
 
+const twitchEventSocket = require("../sockets/twitchEventSocket");
+
 // TOKEN LOGIC
 const fetchAccessToken = async() => {
     try {
@@ -83,6 +85,7 @@ const fetchStreamerId = async() => {
 
         streamerId = user.id;
         console.log(`Streamer ID cached: ${streamerId}`);
+        twitchEventSocket.setStreamerID(streamerId);
     }
     catch (err){
         console.error('Failed to fetch streamer ID:', err?.response?.data?.message || err.message)

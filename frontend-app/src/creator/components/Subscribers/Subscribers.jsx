@@ -34,9 +34,6 @@ const Subscribers = () => {
         loadData();
     }, []);
 
-
-    console.log(subscriberInfo.subscribers);
-
     return (
         <div className="subscribers-container">
             <div className="subscribers-header-container">

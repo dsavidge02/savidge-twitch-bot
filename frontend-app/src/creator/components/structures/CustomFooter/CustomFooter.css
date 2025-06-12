@@ -1,0 +1,13 @@
+.custom-footer-container {
+    display: flex;
+    width: 100%;
+    height: fit-content;
+
+    justify-content: space-around;
+}
+
+.custom-footer-block {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
