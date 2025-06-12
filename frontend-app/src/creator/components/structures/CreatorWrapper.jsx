@@ -4,6 +4,7 @@ import { useViewContext } from '../../contexts/ViewContext';
 import './CreatorWrapper.css';
 
 import CustomHeader from './CustomHeader/CustomHeader';
+import CustomFooter from './CustomFooter/CustomFooter';
 import mindMeleeLogo from "../../../assets/images/mind_melee_logo_transparent.png";
 import { useAuthContext } from '../../contexts/AuthContext';
 
@@ -79,14 +80,14 @@ const CreatorWrapper = () => {
             }
             <div className="creator-wrapper-scrollable-container">
                 <div className={ `creator-wrapper-content-border ${viewParams.mode === 'default' ? '' : `includes--border ${viewParams.design}`}` }>
-                    <div className="creator-wrapper-content">
+                    <div className={`creator-wrapper-content ${viewParams.design}`}>
                         <Outlet/>
                     </div>
                 </div>
                 {
                     viewParams.mode === 'default' && (
                         <div className="creator-wrapper-footer">
-                            <p>FOOTER</p>
+                            <CustomFooter />
                         </div>
                     ) 
                 }

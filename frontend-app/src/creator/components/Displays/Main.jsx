@@ -7,7 +7,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import CustomSlider from "../structures/Displays/CustomSlider/CustomSlider";
 import useEventSocket from "../../hooks/useEventSocket";
 
-const DISPLAY_INTERVAL = 5 * 1000; //number in seconds
+const DISPLAY_INTERVAL = 10 * 1000; //number in seconds
 
 const MainDisplay = () => {
     const [displays, setDisplays] = useState({
@@ -16,14 +16,16 @@ const MainDisplay = () => {
             current: -1,
             goal: 75,
             load: getFollowers,
-            resKey: "count"
+            resKey: "count",
+            title: "Follower Count"
         },
         subscriptions: {
             loading: true,
             current: -1,
             goal: 10,
             load: getSubscribers,
-            resKey: "count"
+            resKey: "count",
+            title: "Subscriber Count"
         }
     });
 
@@ -57,16 +59,15 @@ const MainDisplay = () => {
         }
     }
 
-    const updateDisplay = useCallback((displayName) => {
+    const debounce = (func, delay) => {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), delay);
+        };
+    };
 
-        setDisplays(prev => ({
-            ...prev,
-            [displayName]: {
-                ...prev[displayName],
-                current: prev[displayName].current + 1
-            }
-        }));
-    }, []);
+    const debouncedLoadDisplay = useCallback(debounce(loadDisplay, 500), []);
 
     useEffect(() => {
         const loadAll = async () => {
@@ -89,11 +90,11 @@ const MainDisplay = () => {
     const socketEvents = [
         {
             trigger:"followerUpdate",
-            action: () => updateDisplay("followers")
+            action: () => debouncedLoadDisplay("followers")
         },
         {
             trigger: "subscriberUpdate",
-            action: () => updateDisplay("subscriptions")
+            action: () => debouncedLoadDisplay("subscriptions")
         }
     ];
 
@@ -101,13 +102,17 @@ const MainDisplay = () => {
 
     return (
         <div className="main-display-container">
-            {!displayData.loading && (
-                <CustomSlider
-                    title={`Number of ${activeDisplay}`}
-                    numerator={displayData.current}
-                    denominator={displayData.goal}
-                />
-            )}
+            <div className="main-display">
+                {!displayData.loading && (
+                    <CustomSlider
+                        key={activeDisplay}
+                        title={displayData.title}
+                        numerator={displayData.current}
+                        denominator={displayData.goal}
+                        animation={true}
+                    />
+                )}
+            </div>
         </div>
     );
 };

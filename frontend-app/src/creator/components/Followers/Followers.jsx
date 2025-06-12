@@ -34,9 +34,6 @@ const Followers = () => {
         loadData();
     }, []);
 
-
-    console.log(followerInfo.followers);
-
     return (
         <div className="followers-container">
             <div className="followers-header-container">

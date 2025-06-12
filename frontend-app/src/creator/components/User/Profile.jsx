@@ -25,13 +25,11 @@ const Profile = () => {
         const loadData = async () => {
             try {
                 const follower = await checkFollowing(axiosPrivate);
-                console.log(follower);
                 setUserInfo(
                     follower
                 );
 
                 const subscriptions = await checkSubscriptions(axiosPrivate);
-                console.log(subscriptions);
                 setSubscriptionInfo(
                     subscriptions
                 );
@@ -46,14 +44,6 @@ const Profile = () => {
 
         loadData();
     }, []);
-
-    useEffect(() => {
-        console.log(userInfo.hasOwnProperty("followed_at"));
-    }, [userInfo]);
-
-    useEffect(() => {
-        console.log(JSON.stringify(subscriptionInfo));
-    }, [subscriptionInfo]);
 
     return (
         <div className="profile-container">

@@ -5,8 +5,6 @@ import { useAuthContext } from "../../contexts/AuthContext";
 
 import CustomSpinner from "../structures/CustomSpinner/CustomSpinner";
 
-const sleep = (sec) => new Promise(resolve => setTimeout(resolve, sec * 1000));
-
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
     const refresh = useRefreshToken();

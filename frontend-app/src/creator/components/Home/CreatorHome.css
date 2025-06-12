@@ -3,4 +3,48 @@
     height: fit-content;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.creator-home-header {
+    display: flex;
+    width: fit-content;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.creator-home-header-content {
+    width: fit-content;
+    display: inline;
+}
+
+.creator-home-header-content.sub-header {
+    color: gray;
+}
+
+.creator-home-header-link {
+    color: rgb(25, 0, 255);
+    text-decoration: none;
+}
+
+.creator-home-header-logo {
+    width: 100px;
+    height: 100px;
+}
+
+.creator-home-main-content {
+    display: flex;
+    width: fit-content;
+    flex-direction: column;
+    align-items: center;
+}
+
+.greeting {
+    width: fit-content;
+}
+
+.comments {
+    width: 60%;
 }

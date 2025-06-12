@@ -1,6 +1,6 @@
 import "./CustomSlider.css";
 
-const CustomSlider = ({title, numerator, denominator}) => {
+const CustomSlider = ({ title, numerator, denominator, animation }) => {
     const percentage = Math.min((numerator / denominator), 1);
     const sliderText = `${numerator}`;
 
@@ -11,18 +11,20 @@ const CustomSlider = ({title, numerator, denominator}) => {
     };
 
     return (
-        <div className="custom-slider-container">
+        <div className={`custom-slider-container ${ animation ? "animate" : "" }`}>
             <div className="custom-slider-title">
                 {title}
             </div>
             <div className="custom-slider-inner-container">
-                <div className="custom-slider-fill"
+                <div
+                    key={numerator}
+                    className={`custom-slider-fill ${ animation ? "animate" : "" }`}
                     style={{
                         width: `${percentage * 100}%`,
                         backgroundColor: getColor(percentage)
                     }}
                 >
-                    <div className="custom-slider-text">
+                    <div className={`custom-slider-text`}>
                         {sliderText}
                     </div>
                 </div>

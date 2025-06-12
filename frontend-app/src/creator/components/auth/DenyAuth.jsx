@@ -8,9 +8,6 @@ const DenyAuth = () => {
     const id = getId();
     const roles = getRoles();
 
-    console.log(`id: ${id}`);
-    console.log(`roles: ${roles}`);
-
     return (
         !id
             ? <Outlet />
