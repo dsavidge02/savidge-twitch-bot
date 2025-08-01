@@ -4,15 +4,88 @@
     width: 100%;
     height: 100%;
     align-items: center;
-
-    gap: 10px;
+    gap: 20px;
+    padding: 20px;
 }
 
+.api-admin-container h2 {
+    color: #333;
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.status-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid;
+    min-width: 300px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.status-display.running {
+    border-color: #4CAF50;
+    background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+}
+
+.status-display.down {
+    border-color: #f44336;
+    background: linear-gradient(135deg, #fff8f8 0%, #ffe8e8 100%);
+}
+
+.status-display.unknown {
+    border-color: #ff9800;
+    background: linear-gradient(135deg, #fffbf0 0%, #fff3e0 100%);
+}
+
+.status-icon {
+    font-size: 2.5rem;
+    min-width: 50px;
+    text-align: center;
+}
+
+.status-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.last-checked {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+}
+
+.refresh-button {
+    padding: 12px 24px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    min-width: 150px;
+}
+
+.refresh-button:hover:not(:disabled) {
+    background: #1976D2;
+}
+
+.refresh-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Legacy styles for backward compatibility */
 .api-admin-values-container {
     display: flex;
     flex-direction: column;
     width: fit-content;
     height: fit-content;
-
     gap: 5px;
 }

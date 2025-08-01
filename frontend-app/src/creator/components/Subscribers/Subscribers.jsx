@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { getSubscribers } from "../../api/staticTwitchApi";
+import { getSubscribers } from "../../api/twitchApi";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 import "./Subscribers.css";
@@ -18,8 +18,8 @@ const Subscribers = () => {
             try {
                 const res = await getSubscribers(axiosPrivate);
                 setSubscriberInfo({
-                    count: res.count,
-                    subscribers: res.subscribers
+                    count: res.length,
+                    subscribers: res
                 })
             }
             catch (err) {

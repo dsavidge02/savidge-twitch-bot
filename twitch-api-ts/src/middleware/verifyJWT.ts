@@ -34,4 +34,4 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
             next();
         }
     );
-};
+}; 
