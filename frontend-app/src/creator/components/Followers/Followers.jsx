@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { getFollowers } from "../../api/staticTwitchApi";
+import { getFollowers } from "../../api/twitchApi";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 import "./Followers.css";
@@ -18,8 +18,8 @@ const Followers = () => {
             try {
                 const res = await getFollowers(axiosPrivate);
                 setFollowerInfo({
-                    count: res.count,
-                    followers: res.followers
+                    count: res.length,
+                    followers: res
                 })
             }
             catch (err) {

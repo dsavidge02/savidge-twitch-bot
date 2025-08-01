@@ -10,7 +10,7 @@ import Unauthorized from './creator/components/auth/Unauthorized';
 import RequireAuth from './creator/components/auth/RequireAuth';
 import DenyAuth from './creator/components/auth/DenyAuth';
 
-import APIAdmin from './creator/components/auth/twitch/APIAdmin/APIAdmin';
+import APIAdmin2 from './creator/components/auth/twitch/APIAdmin/APIAdmin2';
 import Profile from './creator/components/User/Profile';
 
 import Followers from './creator/components/Followers/Followers';
@@ -42,7 +42,7 @@ const App = () => {
                             </Route>
 
                             <Route element={<RequireAuth allowedRoles={[2002]} />} >
-                                <Route path='admin' element={<APIAdmin />} />
+                                <Route path='admin' element={<APIAdmin2 />} />
                             </Route>
                         </Route>
 

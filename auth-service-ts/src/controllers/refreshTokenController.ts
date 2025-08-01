@@ -17,7 +17,7 @@ interface RefreshTokenPayload {
     exp: number;
 }
 
-const privateKey = fs.readFileSync(path.join(__dirname, '../certs/private.pem'));
+const privateKey = fs.readFileSync(path.join(__dirname, '../../certs/private.pem'));
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 if (!refreshTokenSecret) throw new Error("Missing REFRESH_TOKEN_SECRET env variable.");
 

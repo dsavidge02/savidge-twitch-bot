@@ -1,5 +1,5 @@
 // IMPORTS
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors, { CorsOptions } from 'cors';
 const app = express().disable('X-Powered-By');
@@ -11,9 +11,11 @@ app.use(cookieParser());
 import dotenv from 'dotenv';
 dotenv.config();
 const host = process.env.AUTH_SERVICE_HOST;
+if (!host) throw new Error('Missing AUTH_SERVICE_HOST.');
 const port = process.env.AUTH_SERVICE_PORT;
+if (!port) throw new Error('Missing AUTH_SERVICE_PORT.');
 const mongoURI = process.env.AUTH_SERVICE_MONGO_URI;
-if (!mongoURI) throw new Error('Missing Mongo URI.');
+if (!mongoURI) throw new Error('Missing AUTH_SERVICE_MONGO_URI.');
 
 // CORS CONFIG
 const whitelist = ['https://savidgeapps.com', 'http://localhost:5173'];
